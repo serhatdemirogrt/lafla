@@ -86,6 +86,22 @@ body.intro .welcome{display:flex}
 .u-bar i{display:block;height:100%;border-radius:99px;background:var(--pri)}
 @media(prefers-color-scheme:dark){.u-bar i{background:var(--hon)}}
 .u-go{flex:none;color:var(--mut);font-size:22px}
+.unit.rev{background:#fff4d6;border-color:#f5c542;color:#1d2530}
+.unit.rev small{color:#5b4a12}
+.u-head{display:flex;align-items:center;gap:14px;margin:18px 0 14px}
+.lv{flex:none;width:60px;height:60px;border-radius:16px;display:grid;place-items:center;font-size:13px;letter-spacing:2px;color:#1f3a5f;background:#e8eef5}
+.lv-b{background:#fde9a9}.lv-c{background:#f7d4cc}
+.lb{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 16px 6px}
+.lb h2{font-family:"Baloo 2",system-ui,sans-serif;font-size:22px;margin:0 0 10px;display:flex;align-items:baseline;gap:8px}
+.lb h2 small{font-family:system-ui,sans-serif;font-size:13px;font-weight:400;color:var(--mut)}
+.lb ol{list-style:none;margin:0;padding:0}
+.lb li{display:flex;align-items:center;gap:12px;padding:10px 8px;border-top:1px solid var(--line)}
+.lb li:first-child{border-top:0}
+.lb li.me{background:light-dark(#fff8e6,#2a2f22);border-radius:12px}
+.lb-r{width:32px;text-align:center;font-size:20px;font-weight:700}
+.lb-n{flex:1;font-weight:600}
+.lb-s{text-align:right;font-weight:700;display:flex;flex-direction:column}
+.lb-s small{font-weight:400;font-size:13px;color:var(--mut)}
 </style>
 </head>
 <body class="intro">
@@ -116,45 +132,352 @@ body.intro .welcome{display:flex}
 
 <script>
 {
-// ---- DERS İÇERİĞİ: tr = Türkçe, en = doğru cevap, b = boşluk yapılacak kelime(ler) ----
+// ---- DERS İÇERİĞİ: ünite → seviye (a Başlangıç, b Orta, c İleri) → cümleler. tr = Türkçe, en = doğru cevap, b = boşluk yapılacak kelime(ler) ----
 const UNITS = [
- {id:"gunluk", name:"Günlük Hayat", ic:"#fde9a9", svg:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>', items:[
-  {tr:"Fotoğrafımı çekebilir misin?", en:"Can you take a photo of me?", b:"take"},
-  {tr:"Bugün çok yorgunum.", en:"I am very tired today.", b:"tired"},
-  {tr:"Su içmek istiyorum.", en:"I want to drink water.", b:"drink"},
-  {tr:"Saat kaç?", en:"What time is it?", b:"time"},
-  {tr:"Kapıyı kapatır mısın?", en:"Can you close the door?", b:"close"},
-  {tr:"Akşam yemeği hazır.", en:"Dinner is ready.", b:"ready"},
-  {tr:"Yarın görüşürüz.", en:"See you tomorrow.", b:"tomorrow"},
-  {tr:"Bunu anlamadım.", en:"I didn't understand this.", b:"understand"},
-  {tr:"Biraz daha yavaş konuşur musun?", en:"Can you speak a little slower?", b:"slower"},
-  {tr:"Telefonumu bulamıyorum.", en:"I can't find my phone.", b:"find"}
+ {id:"gunluk", name:"Günlük Hayat", ic:"#fde9a9", svg:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>', levels:[
+  {id:"a", name:"Başlangıç", items:[
+   {tr:"Fotoğrafımı çekebilir misin?", en:"Can you take a photo of me?", b:"take"},
+   {tr:"Bugün çok yorgunum.", en:"I am very tired today.", b:"tired"},
+   {tr:"Su içmek istiyorum.", en:"I want to drink water.", b:"drink"},
+   {tr:"Saat kaç?", en:"What time is it?", b:"time"},
+   {tr:"Kapıyı kapatır mısın?", en:"Can you close the door?", b:"close"},
+   {tr:"Akşam yemeği hazır.", en:"Dinner is ready.", b:"ready"},
+   {tr:"Yarın görüşürüz.", en:"See you tomorrow.", b:"tomorrow"},
+   {tr:"Bunu anlamadım.", en:"I didn't understand this.", b:"understand"},
+   {tr:"Biraz daha yavaş konuşur musun?", en:"Can you speak a little slower?", b:"slower"},
+   {tr:"Telefonumu bulamıyorum.", en:"I can't find my phone.", b:"find"},
+   {tr:"Günaydın, nasılsın?", en:"Good morning, how are you?", b:"morning"},
+   {tr:"Benim adım Ali.", en:"My name is Ali.", b:"name"},
+   {tr:"Kaç yaşındasın?", en:"How old are you?", b:"old"},
+   {tr:"Kahvaltı hazır mı?", en:"Is breakfast ready?", b:"breakfast"},
+   {tr:"Ellerini yıka.", en:"Wash your hands.", b:"Wash"},
+   {tr:"Işığı kapatır mısın?", en:"Can you turn off the light?", b:"light"},
+   {tr:"Çok açım.", en:"I am very hungry.", b:"hungry"},
+   {tr:"Bugün hava soğuk.", en:"It is cold today.", b:"cold"},
+   {tr:"Televizyon izliyorum.", en:"I am watching TV.", b:"watching"},
+   {tr:"Kitap okumayı severim.", en:"I like reading books.", b:"reading"},
+   {tr:"Annem mutfakta.", en:"My mother is in the kitchen.", b:"kitchen"},
+   {tr:"Kardeşim okulda.", en:"My brother is at school.", b:"brother"},
+   {tr:"Bir bardak süt istiyorum.", en:"I want a glass of milk.", b:"glass"},
+   {tr:"Yatma zamanı.", en:"It is time for bed.", b:"bed"},
+   {tr:"İyi geceler.", en:"Good night.", b:"night"},
+   {tr:"Teşekkür ederim, çok naziksin.", en:"Thank you, you are very kind.", b:"kind"},
+   {tr:"Pencereyi açar mısın?", en:"Can you open the window?", b:"open"},
+   {tr:"Kedim çok tatlı.", en:"My cat is very cute.", b:"cute"},
+   {tr:"Bugün günlerden ne?", en:"What day is it today?", b:"day"},
+   {tr:"Ayakkabılarımı giyiyorum.", en:"I am putting on my shoes.", b:"shoes"},
+   {tr:"Bu benim çantam.", en:"This is my bag.", b:"bag"},
+   {tr:"Bana yardım eder misin?", en:"Can you help me, please?", b:"help"},
+   {tr:"Hava güneşli.", en:"It is sunny.", b:"sunny"},
+   {tr:"Uykum var.", en:"I am sleepy.", b:"sleepy"},
+   {tr:"Arkadaşımı arıyorum.", en:"I am calling my friend.", b:"calling"}
+  ]},
+  {id:"b", name:"Orta", items:[
+   {tr:"Dün akşam ne yaptın?", en:"What did you do last night?", b:"last night"},
+   {tr:"Bu hafta sonu planın var mı?", en:"Do you have any plans this weekend?", b:"plans"},
+   {tr:"Market alışverişi yapmamız lazım.", en:"We need to go grocery shopping.", b:"grocery"},
+   {tr:"Bulaşıkları ben yıkarım.", en:"I will wash the dishes.", b:"dishes"},
+   {tr:"Çamaşır makinesi bozuldu.", en:"The washing machine is broken.", b:"broken"},
+   {tr:"Biraz daha erken kalkmalıyım.", en:"I should wake up a little earlier.", b:"earlier"},
+   {tr:"Akşam yemeğinde ne yiyoruz?", en:"What are we having for dinner?", b:"having"},
+   {tr:"Trafik bugün çok yoğundu.", en:"The traffic was very heavy today.", b:"heavy"},
+   {tr:"Anahtarlarımı nereye koydum?", en:"Where did I put my keys?", b:"keys"},
+   {tr:"Bu filmi daha önce izledim.", en:"I have seen this movie before.", b:"seen"},
+   {tr:"Hafta sonu parka gidelim mi?", en:"Shall we go to the park this weekend?", b:"Shall"},
+   {tr:"Kahveni nasıl içersin?", en:"How do you take your coffee?", b:"coffee"},
+   {tr:"Şekersiz, lütfen.", en:"Without sugar, please.", b:"sugar"},
+   {tr:"Bugün kendimi iyi hissetmiyorum.", en:"I don't feel well today.", b:"feel"},
+   {tr:"Başım ağrıyor.", en:"I have a headache.", b:"headache"},
+   {tr:"Doktora gitmen lazım.", en:"You need to see a doctor.", b:"doctor"},
+   {tr:"Yağmur yağacak gibi görünüyor.", en:"It looks like it's going to rain.", b:"rain"},
+   {tr:"Şemsiyeni yanına al.", en:"Take your umbrella with you.", b:"umbrella"},
+   {tr:"Odanı topla, lütfen.", en:"Please tidy up your room.", b:"tidy up"},
+   {tr:"Sence hangisi daha güzel?", en:"Which one do you think is nicer?", b:"nicer"},
+   {tr:"Biraz dinlenmem lazım.", en:"I need to get some rest.", b:"rest"},
+   {tr:"Yarın erken çıkmam gerekiyor.", en:"I have to leave early tomorrow.", b:"leave"},
+   {tr:"Bu akşam misafirimiz var.", en:"We have guests tonight.", b:"guests"},
+   {tr:"Pizza sipariş edelim mi?", en:"Should we order pizza?", b:"order"},
+   {tr:"Telefonumun şarjı bitti.", en:"My phone battery is dead.", b:"battery"},
+   {tr:"İnternet çok yavaş.", en:"The internet is very slow.", b:"slow"},
+   {tr:"Köpeği yürüyüşe çıkarır mısın?", en:"Can you take the dog for a walk?", b:"walk"},
+   {tr:"Saat yedide uyandım.", en:"I woke up at seven.", b:"woke up"},
+   {tr:"Biraz daha tuz ister misin?", en:"Would you like some more salt?", b:"salt"},
+   {tr:"Hafta içi çok yoğunum.", en:"I am very busy during the week.", b:"busy"},
+   {tr:"Yeni bir hobi edinmek istiyorum.", en:"I want to start a new hobby.", b:"hobby"},
+   {tr:"Bu çorba çok lezzetli.", en:"This soup is delicious.", b:"delicious"},
+   {tr:"Komşumuz çok yardımsever.", en:"Our neighbor is very helpful.", b:"neighbor"},
+   {tr:"Faturaları ödedin mi?", en:"Did you pay the bills?", b:"bills"},
+   {tr:"Bugün spor salonuna gittim.", en:"I went to the gym today.", b:"gym"}
+  ]},
+  {id:"c", name:"İleri", items:[
+   {tr:"Keşke daha fazla boş zamanım olsa.", en:"I wish I had more free time.", b:"wish"},
+   {tr:"Bunu yapmaya alışkın değilim.", en:"I'm not used to doing this.", b:"used to"},
+   {tr:"Bu konuda ne düşündüğünü merak ediyorum.", en:"I wonder what you think about this.", b:"wonder"},
+   {tr:"Sonunda işleri yoluna koydum.", en:"I finally got things sorted out.", b:"sorted out"},
+   {tr:"Bütün gün evde oturmaktan sıkıldım.", en:"I'm tired of staying at home all day.", b:"tired of"},
+   {tr:"Bu kararı vermek kolay olmadı.", en:"It wasn't easy to make this decision.", b:"decision"},
+   {tr:"Ne olursa olsun yanındayım.", en:"No matter what happens, I'm with you.", b:"No matter"},
+   {tr:"Erken yatsaydım bu kadar yorgun olmazdım.", en:"If I had gone to bed earlier, I wouldn't be so tired.", b:"had gone"},
+   {tr:"Bu alışkanlıktan vazgeçmeye çalışıyorum.", en:"I'm trying to give up this habit.", b:"give up"},
+   {tr:"Bana hatırlattığın için teşekkürler.", en:"Thanks for reminding me.", b:"reminding"},
+   {tr:"Bunu ertelemeyi bırakmalıyım.", en:"I should stop putting this off.", b:"putting this off"},
+   {tr:"Her şey planladığımız gibi gitti.", en:"Everything went as we planned.", b:"planned"},
+   {tr:"Ev işlerini aramızda paylaşalım.", en:"Let's share the housework between us.", b:"share"},
+   {tr:"Bu konuda sana katılmıyorum.", en:"I don't agree with you on this.", b:"agree"},
+   {tr:"Ona güvenebileceğini sanmıyorum.", en:"I don't think you can trust him.", b:"trust"},
+   {tr:"Hayatımda hiç bu kadar güldüğümü hatırlamıyorum.", en:"I can't remember laughing this much in my life.", b:"laughing"},
+   {tr:"Bu ay daha çok tasarruf etmemiz lazım.", en:"We need to save more money this month.", b:"save"},
+   {tr:"Sağlıklı beslenmeye dikkat ediyorum.", en:"I'm careful about eating healthy.", b:"careful"},
+   {tr:"Biraz yürüyüş yapmak sana iyi gelir.", en:"Going for a walk would do you good.", b:"do you good"},
+   {tr:"Ne demek istediğini tam anlayamadım.", en:"I didn't quite get what you meant.", b:"meant"},
+   {tr:"Bu durum beni gerçekten endişelendiriyor.", en:"This situation really worries me.", b:"worries"},
+   {tr:"Kendine iyi bak.", en:"Take care of yourself.", b:"Take care"},
+   {tr:"Sabırlı olmaya çalış.", en:"Try to be patient.", b:"patient"},
+   {tr:"Bunu sana daha önce söylemeliydim.", en:"I should have told you this earlier.", b:"should have"},
+   {tr:"Hiç aklıma gelmemişti.", en:"It never crossed my mind.", b:"crossed"},
+   {tr:"Bu fikir hoşuma gidiyor.", en:"This idea appeals to me.", b:"appeals"},
+   {tr:"Ne kadar zamandır burada yaşıyorsun?", en:"How long have you been living here?", b:"How long"},
+   {tr:"Aslında haklısın.", en:"Actually, you're right.", b:"Actually"},
+   {tr:"Bunu yapmak zorunda değilsin.", en:"You don't have to do this.", b:"have to"},
+   {tr:"Kendimi çok daha iyi hissediyorum.", en:"I feel much better.", b:"much better"},
+   {tr:"Sonuçta her şey yoluna girdi.", en:"In the end, everything worked out.", b:"worked out"},
+   {tr:"Bu hafta çok şey oldu.", en:"A lot has happened this week.", b:"happened"},
+   {tr:"Bunun için çok heyecanlıyım.", en:"I'm really excited about this.", b:"excited"},
+   {tr:"Beni beklemene gerek yok.", en:"You don't need to wait for me.", b:"wait"},
+   {tr:"Gerçekten çok etkilendim.", en:"I'm really impressed.", b:"impressed"}
+  ]}
  ]},
- {id:"tatil", name:"Tatil ve Seyahat", ic:"#cfe3f7", svg:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', items:[
-  {tr:"Tuvalet nerede?", en:"Where is the toilet?", b:"Where"},
-  {tr:"Hesabı alabilir miyim?", en:"Can I have the bill?", b:"bill"},
-  {tr:"Bir oda ayırttım.", en:"I booked a room.", b:"booked"},
-  {tr:"Bu ne kadar?", en:"How much is this?", b:"much"},
-  {tr:"Havalimanına nasıl giderim?", en:"How can I get to the airport?", b:"get to"},
-  {tr:"Kredi kartı kabul ediyor musunuz?", en:"Do you accept credit cards?", b:"accept"},
-  {tr:"Menüyü görebilir miyim?", en:"Can I see the menu?", b:"menu"},
-  {tr:"Uçağım saat beşte kalkıyor.", en:"My flight leaves at five.", b:"leaves"},
-  {tr:"Kayboldum.", en:"I am lost.", b:"lost"},
-  {tr:"Bir fotoğraf daha çekelim.", en:"Let's take one more photo.", b:"one more"}
+ {id:"tatil", name:"Tatil ve Seyahat", ic:"#cfe3f7", svg:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', levels:[
+  {id:"a", name:"Başlangıç", items:[
+   {tr:"Tuvalet nerede?", en:"Where is the toilet?", b:"Where"},
+   {tr:"Hesabı alabilir miyim?", en:"Can I have the bill?", b:"bill"},
+   {tr:"Bir oda ayırttım.", en:"I booked a room.", b:"booked"},
+   {tr:"Bu ne kadar?", en:"How much is this?", b:"much"},
+   {tr:"Havalimanına nasıl giderim?", en:"How can I get to the airport?", b:"get to"},
+   {tr:"Kredi kartı kabul ediyor musunuz?", en:"Do you accept credit cards?", b:"accept"},
+   {tr:"Menüyü görebilir miyim?", en:"Can I see the menu?", b:"menu"},
+   {tr:"Uçağım saat beşte kalkıyor.", en:"My flight leaves at five.", b:"leaves"},
+   {tr:"Kayboldum.", en:"I am lost.", b:"lost"},
+   {tr:"Bir fotoğraf daha çekelim.", en:"Let's take one more photo.", b:"one more"},
+   {tr:"İki kişilik bir masa, lütfen.", en:"A table for two, please.", b:"table"},
+   {tr:"Biraz su alabilir miyim?", en:"Can I have some water?", b:"water"},
+   {tr:"Plaj nerede?", en:"Where is the beach?", b:"beach"},
+   {tr:"Otel çok güzel.", en:"The hotel is very nice.", b:"hotel"},
+   {tr:"Pasaportum burada.", en:"Here is my passport.", b:"passport"},
+   {tr:"Bir bilet, lütfen.", en:"One ticket, please.", b:"ticket"},
+   {tr:"Otobüs durağı nerede?", en:"Where is the bus stop?", b:"bus stop"},
+   {tr:"Taksi çağırır mısınız?", en:"Can you call a taxi?", b:"taxi"},
+   {tr:"Bu çok pahalı.", en:"This is too expensive.", b:"expensive"},
+   {tr:"Daha ucuz bir şey var mı?", en:"Do you have anything cheaper?", b:"cheaper"},
+   {tr:"Dondurma alalım.", en:"Let's buy some ice cream.", b:"ice cream"},
+   {tr:"Burada fotoğraf çekebilir miyim?", en:"Can I take photos here?", b:"photos"},
+   {tr:"Müze kaçta açılıyor?", en:"What time does the museum open?", b:"museum"},
+   {tr:"İngilizce konuşuyor musunuz?", en:"Do you speak English?", b:"speak"},
+   {tr:"Anlamadım, tekrar söyler misiniz?", en:"Sorry, can you say that again?", b:"again"},
+   {tr:"Sağa dönün.", en:"Turn right.", b:"right"},
+   {tr:"Düz gidin.", en:"Go straight ahead.", b:"straight"},
+   {tr:"Burası çok güzel!", en:"This place is beautiful!", b:"beautiful"},
+   {tr:"Kahvaltı dahil mi?", en:"Is breakfast included?", b:"included"},
+   {tr:"Oda anahtarım nerede?", en:"Where is my room key?", b:"room key"},
+   {tr:"Valizim çok ağır.", en:"My suitcase is very heavy.", b:"suitcase"},
+   {tr:"Deniz çok sıcak.", en:"The sea is very warm.", b:"warm"},
+   {tr:"Bir harita alabilir miyim?", en:"Can I have a map?", b:"map"},
+   {tr:"Bugün yüzmeye gidiyoruz.", en:"We are going swimming today.", b:"swimming"},
+   {tr:"Teşekkürler, iyi günler!", en:"Thank you, have a nice day!", b:"nice day"}
+  ]},
+  {id:"b", name:"Orta", items:[
+   {tr:"İki gecelik bir oda ayırtmak istiyorum.", en:"I'd like to book a room for two nights.", b:"book"},
+   {tr:"Odadan saat kaçta çıkmamız gerekiyor?", en:"What time do we need to check out?", b:"check out"},
+   {tr:"Klima çalışmıyor.", en:"The air conditioning isn't working.", b:"air conditioning"},
+   {tr:"Biraz havlu getirebilir misiniz?", en:"Could you bring us some towels?", b:"towels"},
+   {tr:"Uçuşum ertelendi.", en:"My flight has been delayed.", b:"delayed"},
+   {tr:"Bavulum kayıp.", en:"My luggage is missing.", b:"luggage"},
+   {tr:"Kapı numarası kaç?", en:"What is the gate number?", b:"gate"},
+   {tr:"Cam kenarı bir koltuk alabilir miyim?", en:"Can I have a window seat?", b:"window seat"},
+   {tr:"Yakınlarda iyi bir restoran var mı?", en:"Is there a good restaurant nearby?", b:"nearby"},
+   {tr:"Ne tavsiye edersiniz?", en:"What would you recommend?", b:"recommend"},
+   {tr:"Ben vejetaryenim.", en:"I am a vegetarian.", b:"vegetarian"},
+   {tr:"Bunda fıstık var mı?", en:"Does this contain peanuts?", b:"peanuts"},
+   {tr:"Hesabı bölebilir miyiz?", en:"Can we split the bill?", b:"split"},
+   {tr:"Servis ücreti dahil mi?", en:"Is the tip included?", b:"tip"},
+   {tr:"Bir araba kiralamak istiyorum.", en:"I would like to rent a car.", b:"rent"},
+   {tr:"Tren istasyonu ne kadar uzakta?", en:"How far is it to the train station?", b:"How far"},
+   {tr:"Yürüyerek gidilebilir mi?", en:"Is it within walking distance?", b:"walking distance"},
+   {tr:"Bu otobüs şehir merkezine gider mi?", en:"Does this bus go to the city center?", b:"city center"},
+   {tr:"Bir sonraki tren ne zaman?", en:"When is the next train?", b:"next"},
+   {tr:"Bu koltuk dolu mu?", en:"Is this seat taken?", b:"seat"},
+   {tr:"Bunu deneyebilir miyim?", en:"Can I try this on?", b:"try this on"},
+   {tr:"Bunun daha büyük bedeni var mı?", en:"Do you have this in a bigger size?", b:"size"},
+   {tr:"Sadece bakıyorum, teşekkürler.", en:"I'm just looking, thanks.", b:"just looking"},
+   {tr:"İndirim var mı?", en:"Is there a discount?", b:"discount"},
+   {tr:"Nakit ödeyeceğim.", en:"I'll pay in cash.", b:"cash"},
+   {tr:"Bizim bir fotoğrafımızı çeker misiniz?", en:"Could you take a picture of us?", b:"picture"},
+   {tr:"Tur saat kaçta başlıyor?", en:"What time does the tour start?", b:"tour"},
+   {tr:"Rehberli turlarınız var mı?", en:"Do you offer guided tours?", b:"guided"},
+   {tr:"Güneş kremimi unuttum.", en:"I forgot my sunscreen.", b:"sunscreen"},
+   {tr:"Burada ne kadar kalacaksınız?", en:"How long are you staying here?", b:"staying"},
+   {tr:"Bir haftalığına buradayız.", en:"We are here for a week.", b:"week"},
+   {tr:"Tatil için buradayız.", en:"We are here on holiday.", b:"holiday"},
+   {tr:"En yakın eczane nerede?", en:"Where is the nearest pharmacy?", b:"pharmacy"},
+   {tr:"Odamızı değiştirebilir miyiz?", en:"Can we change our room?", b:"change"},
+   {tr:"Manzara harika!", en:"The view is amazing!", b:"view"}
+  ]},
+  {id:"c", name:"İleri", items:[
+   {tr:"Rezervasyonumda bir sorun var gibi görünüyor.", en:"There seems to be a problem with my reservation.", b:"reservation"},
+   {tr:"Odamızı daha iyi bir odaya yükseltmek mümkün mü?", en:"Is it possible to upgrade our room?", b:"upgrade"},
+   {tr:"Odamız temizlenmemiş.", en:"Our room hasn't been cleaned.", b:"cleaned"},
+   {tr:"Bu konuyu müdürle konuşmak istiyorum.", en:"I'd like to speak to the manager about this.", b:"manager"},
+   {tr:"Aktarma uçuşumu kaçırdım.", en:"I missed my connecting flight.", b:"connecting"},
+   {tr:"Beni bir sonraki uçuşa alabilir misiniz?", en:"Could you put me on the next flight?", b:"put me on"},
+   {tr:"Bavulum hasar görmüş.", en:"My suitcase has been damaged.", b:"damaged"},
+   {tr:"Bu bölgeye ilk defa geliyoruz.", en:"This is our first time in this area.", b:"first time"},
+   {tr:"Yerel halkın gittiği bir yer önerebilir misiniz?", en:"Can you suggest a place where locals go?", b:"locals"},
+   {tr:"Turist tuzaklarından uzak durmak istiyoruz.", en:"We want to avoid the tourist traps.", b:"tourist traps"},
+   {tr:"Bu yemeğin içinde ne var?", en:"What's in this dish?", b:"dish"},
+   {tr:"Gluten intoleransım var.", en:"I have a gluten intolerance.", b:"intolerance"},
+   {tr:"Siparişimiz hâlâ gelmedi.", en:"Our order still hasn't arrived.", b:"arrived"},
+   {tr:"Bu benim sipariş ettiğim şey değil.", en:"This isn't what I ordered.", b:"ordered"},
+   {tr:"Kartımla ilgili bir sorun var gibi.", en:"There seems to be an issue with my card.", b:"issue"},
+   {tr:"Fiyata vergi dahil mi?", en:"Does the price include tax?", b:"tax"},
+   {tr:"Vize başvurusu için hangi belgeler gerekiyor?", en:"What documents do I need for the visa application?", b:"documents"},
+   {tr:"Pasaportumun süresi dolmak üzere.", en:"My passport is about to expire.", b:"expire"},
+   {tr:"Yolda kaza olmuş, gecikeceğiz.", en:"There's been an accident on the road, so we'll be late.", b:"accident"},
+   {tr:"Arabamız bozuldu.", en:"Our car broke down.", b:"broke down"},
+   {tr:"Bir yedek lastiğe ihtiyacımız var.", en:"We need a spare tire.", b:"spare"},
+   {tr:"Galiba kaybolduk, yardım eder misiniz?", en:"We seem to be lost, could you help us?", b:"seem"},
+   {tr:"Buradan oraya en kolay nasıl gideriz?", en:"What's the easiest way to get there from here?", b:"easiest way"},
+   {tr:"Önceden bilet almamız gerekiyor mu?", en:"Do we need to buy tickets in advance?", b:"in advance"},
+   {tr:"Tekerlekli sandalye erişimi var mı?", en:"Is there wheelchair access?", b:"wheelchair"},
+   {tr:"Çocuklar için indirim var mı?", en:"Are there discounts for children?", b:"children"},
+   {tr:"Bu fırsatı kaçırmak istemem.", en:"I wouldn't want to miss this opportunity.", b:"opportunity"},
+   {tr:"Buraya mutlaka tekrar gelmeliyiz.", en:"We should definitely come back here.", b:"definitely"},
+   {tr:"Seyahat sigortamız var.", en:"We have travel insurance.", b:"insurance"},
+   {tr:"Beyan edecek bir şeyim yok.", en:"I have nothing to declare.", b:"declare"},
+   {tr:"Bu yolculuk beklediğimden uzun sürdü.", en:"This journey took longer than I expected.", b:"expected"},
+   {tr:"Saat farkına alışmak zor.", en:"It's hard to get used to the time difference.", b:"time difference"},
+   {tr:"Odadan daha geç çıkabilir miyiz?", en:"Could we check out late?", b:"late"},
+   {tr:"Tatilimiz harika geçti.", en:"We had a wonderful holiday.", b:"wonderful"},
+   {tr:"Burayı herkese tavsiye ederim.", en:"I would recommend this place to everyone.", b:"everyone"}
+  ]}
  ]},
- {id:"okul", name:"Okul ve İş", ic:"#d7efd9", svg:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 7h7M9 11h5"/>', items:[
-  {tr:"Ödevimi bitirdim.", en:"I finished my homework.", b:"finished"},
-  {tr:"Bir sorum var.", en:"I have a question.", b:"question"},
-  {tr:"Toplantı kaçta başlıyor?", en:"What time does the meeting start?", b:"start"},
-  {tr:"Bunu tekrar edebilir misiniz?", en:"Could you repeat that?", b:"repeat"},
-  {tr:"Geç kaldığım için özür dilerim.", en:"Sorry I'm late.", b:"late"},
-  {tr:"Sınavım iyi geçti.", en:"My exam went well.", b:"went"},
-  {tr:"Yardımına ihtiyacım var.", en:"I need your help.", b:"need"},
-  {tr:"Bu konuda hemfikirim.", en:"I agree with this.", b:"agree"},
-  {tr:"E-postanı aldım.", en:"I got your email.", b:"got"},
-  {tr:"Bugün evden çalışıyorum.", en:"I'm working from home today.", b:"from home"}
+ {id:"okul", name:"Okul ve İş", ic:"#d7efd9", svg:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 7h7M9 11h5"/>', levels:[
+  {id:"a", name:"Başlangıç", items:[
+   {tr:"Ödevimi bitirdim.", en:"I finished my homework.", b:"finished"},
+   {tr:"Bir sorum var.", en:"I have a question.", b:"question"},
+   {tr:"Toplantı kaçta başlıyor?", en:"What time does the meeting start?", b:"start"},
+   {tr:"Bunu tekrar edebilir misiniz?", en:"Could you repeat that?", b:"repeat"},
+   {tr:"Geç kaldığım için özür dilerim.", en:"Sorry I'm late.", b:"late"},
+   {tr:"Sınavım iyi geçti.", en:"My exam went well.", b:"went"},
+   {tr:"Yardımına ihtiyacım var.", en:"I need your help.", b:"need"},
+   {tr:"Bu konuda hemfikirim.", en:"I agree with this.", b:"agree"},
+   {tr:"E-postanı aldım.", en:"I got your email.", b:"got"},
+   {tr:"Bugün evden çalışıyorum.", en:"I'm working from home today.", b:"from home"},
+   {tr:"Öğretmenim çok iyi.", en:"My teacher is very nice.", b:"teacher"},
+   {tr:"Kalemimi unuttum.", en:"I forgot my pencil.", b:"pencil"},
+   {tr:"Tahtaya bak.", en:"Look at the board.", b:"board"},
+   {tr:"Sınıfımız ikinci katta.", en:"Our classroom is on the second floor.", b:"classroom"},
+   {tr:"Bugün matematik dersimiz var.", en:"We have math class today.", b:"math"},
+   {tr:"Bu kelime ne demek?", en:"What does this word mean?", b:"mean"},
+   {tr:"Silgini ödünç alabilir miyim?", en:"Can I borrow your eraser?", b:"borrow"},
+   {tr:"Teneffüs zamanı.", en:"It is break time.", b:"break"},
+   {tr:"Kitaplarınızı açın.", en:"Open your books.", b:"books"},
+   {tr:"Sessiz olun, lütfen.", en:"Please be quiet.", b:"quiet"},
+   {tr:"Ofisim şehir merkezinde.", en:"My office is in the city center.", b:"office"},
+   {tr:"Saat dokuzda başlıyorum.", en:"I start at nine.", b:"nine"},
+   {tr:"Bugün çok işim var.", en:"I have a lot of work today.", b:"work"},
+   {tr:"Öğle yemeği yiyelim mi?", en:"Shall we have lunch?", b:"lunch"},
+   {tr:"Bilgisayarım çalışmıyor.", en:"My computer is not working.", b:"computer"},
+   {tr:"Patronum toplantıda.", en:"My boss is in a meeting.", b:"boss"},
+   {tr:"Bu benim iş arkadaşım.", en:"This is my colleague.", b:"colleague"},
+   {tr:"Mesai saat beşte bitiyor.", en:"Work finishes at five.", b:"finishes"},
+   {tr:"Hazır mısın?", en:"Are you ready?", b:"ready"},
+   {tr:"Bir dakika bekler misin?", en:"Can you wait a minute?", b:"minute"},
+   {tr:"Bunu yazar mısın?", en:"Can you write it down?", b:"write"},
+   {tr:"Ödev çok kolaydı.", en:"The homework was very easy.", b:"easy"},
+   {tr:"Bugün okul yok.", en:"There is no school today.", b:"school"},
+   {tr:"Yeni bir iş buldum.", en:"I found a new job.", b:"job"},
+   {tr:"İyi çalışmalar!", en:"Have a good day at work!", b:"good day"}
+  ]},
+  {id:"b", name:"Orta", items:[
+   {tr:"Sunumumu cuma gününe kadar bitirmem lazım.", en:"I need to finish my presentation by Friday.", b:"presentation"},
+   {tr:"Toplantıyı yarına alabilir miyiz?", en:"Can we move the meeting to tomorrow?", b:"move"},
+   {tr:"Raporu sana e-postayla gönderdim.", en:"I sent you the report by email.", b:"report"},
+   {tr:"Bu proje için bir son tarih var mı?", en:"Is there a deadline for this project?", b:"deadline"},
+   {tr:"Bu konuyu biraz daha açıklar mısınız?", en:"Could you explain this topic a bit more?", b:"explain"},
+   {tr:"Notlarını ödünç alabilir miyim?", en:"Can I borrow your notes?", b:"notes"},
+   {tr:"Sınava çalışmam gerekiyor.", en:"I need to study for the exam.", b:"study"},
+   {tr:"Matematikte iyi değilim.", en:"I'm not good at math.", b:"good at"},
+   {tr:"Bu soruyu çözemedim.", en:"I couldn't solve this question.", b:"solve"},
+   {tr:"Grup ödevi yapıyoruz.", en:"We are doing a group project.", b:"group"},
+   {tr:"Öğretmen bize çok ödev verdi.", en:"The teacher gave us a lot of homework.", b:"gave"},
+   {tr:"Bugün derse geç kaldım.", en:"I was late for class today.", b:"late for"},
+   {tr:"Üniversitede ne okuyorsun?", en:"What are you studying at university?", b:"studying"},
+   {tr:"Mezun olunca ne yapmak istiyorsun?", en:"What do you want to do after you graduate?", b:"graduate"},
+   {tr:"İş görüşmem yarın.", en:"My job interview is tomorrow.", b:"interview"},
+   {tr:"Özgeçmişimi güncellemem lazım.", en:"I need to update my CV.", b:"update"},
+   {tr:"Bu pozisyona başvurdum.", en:"I applied for this position.", b:"applied"},
+   {tr:"Ekibimizde beş kişi var.", en:"There are five people on our team.", b:"team"},
+   {tr:"Bir müşteriyle toplantım var.", en:"I have a meeting with a client.", b:"client"},
+   {tr:"Bu dosyayı yazdırabilir misin?", en:"Can you print this file?", b:"print"},
+   {tr:"Yazıcı yine bozuldu.", en:"The printer is broken again.", b:"printer"},
+   {tr:"Kısa bir ara verelim.", en:"Let's take a short break.", b:"short break"},
+   {tr:"Bu görevi kime vermeliyim?", en:"Who should I give this task to?", b:"task"},
+   {tr:"Gelecek haftaya kadar izindeyim.", en:"I'm on leave until next week.", b:"on leave"},
+   {tr:"Bugün çok verimli bir gündü.", en:"Today was a very productive day.", b:"productive"},
+   {tr:"Bu e-postaya cevap verdin mi?", en:"Did you reply to this email?", b:"reply"},
+   {tr:"Ekranını paylaşabilir misin?", en:"Can you share your screen?", b:"screen"},
+   {tr:"Sesin gelmiyor.", en:"I can't hear you.", b:"hear"},
+   {tr:"Kameranı açar mısın?", en:"Could you turn on your camera?", b:"camera"},
+   {tr:"Bunu not alayım.", en:"Let me write that down.", b:"write that down"},
+   {tr:"Bunu bir sonraki toplantıda konuşalım.", en:"Let's discuss this at the next meeting.", b:"discuss"},
+   {tr:"Herkes anladı mı?", en:"Does everyone understand?", b:"understand"},
+   {tr:"Sınav sonuçları açıklandı.", en:"The exam results are out.", b:"results"},
+   {tr:"Kütüphanede ders çalışıyorum.", en:"I'm studying in the library.", b:"library"},
+   {tr:"Bu dönem çok zor geçti.", en:"This semester was very hard.", b:"semester"}
+  ]},
+  {id:"c", name:"İleri", items:[
+   {tr:"Bu konuda size geri dönüş yapacağım.", en:"I'll get back to you on this.", b:"get back to you"},
+   {tr:"Bu konuyu daha ayrıntılı incelemeliyiz.", en:"We should look into this in more detail.", b:"in more detail"},
+   {tr:"Takvimime bakıp size haber vereyim.", en:"Let me check my schedule and let you know.", b:"schedule"},
+   {tr:"Bu teklifi düşünmek için zamana ihtiyacım var.", en:"I need some time to consider this offer.", b:"consider"},
+   {tr:"Bu fikri daha da geliştirmemiz gerekiyor.", en:"We need to develop this idea further.", b:"develop"},
+   {tr:"Önceliklerimizi belirlememiz gerekiyor.", en:"We need to set our priorities.", b:"priorities"},
+   {tr:"Bu sorunun sorumluluğunu alıyorum.", en:"I take responsibility for this problem.", b:"responsibility"},
+   {tr:"Bütçeyi aşmamaya dikkat etmeliyiz.", en:"We must be careful not to go over budget.", b:"budget"},
+   {tr:"Maaş artışı istemek istiyorum.", en:"I'd like to ask for a raise.", b:"raise"},
+   {tr:"Terfi aldım!", en:"I got promoted!", b:"promoted"},
+   {tr:"İşimden ayrılmayı düşünüyorum.", en:"I'm thinking about quitting my job.", b:"quitting"},
+   {tr:"Bu işi zamanında yetiştirmek zor olacak.", en:"It will be hard to get this done on time.", b:"on time"},
+   {tr:"Ekip olarak harika iş çıkardınız.", en:"You did a great job as a team.", b:"great job"},
+   {tr:"Geri bildiriminiz için teşekkür ederim.", en:"Thank you for your feedback.", b:"feedback"},
+   {tr:"Aylardır bu tez üzerinde çalışıyorum.", en:"I've been working on this thesis for months.", b:"thesis"},
+   {tr:"Bir bursa başvurmayı planlıyorum.", en:"I'm planning to apply for a scholarship.", b:"scholarship"},
+   {tr:"Yüksek lisans yapmak istiyorum.", en:"I want to do a master's degree.", b:"degree"},
+   {tr:"Bu dersi geçmek için çok çalışmam lazım.", en:"I have to work hard to pass this course.", b:"pass"},
+   {tr:"Kaynakçayı eklemeyi unutma.", en:"Don't forget to add the references.", b:"references"},
+   {tr:"Bu argümanı destekleyecek kanıt bulmalıyız.", en:"We need to find evidence to support this argument.", b:"evidence"},
+   {tr:"Sunumdan sonra soruları yanıtlayacağım.", en:"I'll answer questions after the presentation.", b:"answer questions"},
+   {tr:"Uzman değilim ama elimden geleni yaparım.", en:"I'm not an expert, but I'll do my best.", b:"do my best"},
+   {tr:"Toplantı notlarını herkese gönderir misin?", en:"Could you send the meeting notes to everyone?", b:"meeting notes"},
+   {tr:"Bu süreci nasıl iyileştirebiliriz?", en:"How can we improve this process?", b:"improve"},
+   {tr:"Müşteri memnuniyeti bizim için çok önemli.", en:"Customer satisfaction is very important to us.", b:"satisfaction"},
+   {tr:"Sözleşmeyi imzalamadan önce okumalıyız.", en:"We should read the contract before signing it.", b:"contract"},
+   {tr:"Şu an işimiz çok fazla.", en:"We're overloaded right now.", b:"overloaded"},
+   {tr:"Bu konuda net bir karar vermeliyiz.", en:"We need to make a clear decision on this.", b:"clear decision"},
+   {tr:"Bunu yazılı olarak alabilir miyim?", en:"Can I get this in writing?", b:"in writing"},
+   {tr:"Uzaktan çalışmanın avantajları var.", en:"Working remotely has its advantages.", b:"advantages"},
+   {tr:"Sınav stresimi yönetmeye çalışıyorum.", en:"I'm trying to manage my exam stress.", b:"manage"},
+   {tr:"Bu konuda bana yol gösterebilir misiniz?", en:"Could you give me some guidance on this?", b:"guidance"},
+   {tr:"Bu deneyimden çok şey öğrendim.", en:"I learned a lot from this experience.", b:"experience"},
+   {tr:"Kariyerimde yeni bir yön arıyorum.", en:"I'm looking for a new direction in my career.", b:"direction"},
+   {tr:"Hedeflerime ulaşmak için çok çalışıyorum.", en:"I'm working hard to reach my goals.", b:"goals"}
+  ]}
  ]}
 ];
+// Her cümlenin anahtarı İngilizce metnidir; ilerleme ve tekrar bu anahtarla tutulur.
+const ITEMS = {};
+UNITS.forEach(u=>u.levels.forEach(l=>l.items.forEach(it=>{it.key=it.en;it.u=u;it.l=l;ITEMS[it.key]=it})));
+const LEVEL_NOTE = {a:"Kısa, temel cümleler", b:"Günlük konuşma", c:"Uzun ve deyimli cümleler"};
 
 // ---- DEPOLAMA ----
 const store = {
@@ -163,19 +486,45 @@ const store = {
 };
 let users = store.get("as_users",["Ben"]);
 let cur = store.get("as_cur",users[0]);
-const prog = () => store.get("as_p_"+cur,{done:{},streak:0,last:"",total:0});
+const day = (off=0) => {const d=new Date();d.setDate(d.getDate()+off);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+function loadProg(name){
+  const p = store.get("as_p_"+name,{}) || {};
+  p.done=p.done||{}; p.streak=p.streak||0; p.last=p.last||""; p.total=p.total||0; p.rev=p.rev||{}; p.days=p.days||{};
+  if(p.v!==2){ // v1.1 anahtarlarını (gunluk0, tatil3…) cümle anahtarına çevir
+    const d={};
+    for(const k in p.done){
+      const m=k.match(/^(gunluk|tatil|okul)(\d+)$/);
+      if(m){const it=UNITS.find(u=>u.id===m[1]).levels[0].items[+m[2]]; if(it) d[it.key]=1}
+      else if(ITEMS[k]) d[k]=1;
+    }
+    p.done=d; p.total=Object.keys(d).length; p.v=2; store.set("as_p_"+name,p);
+  }
+  return p;
+}
+const prog = () => loadProg(cur);
 const saveProg = p => store.set("as_p_"+cur,p);
+const streakOf = p => (p.last===day()||p.last===day(-1)) ? p.streak : 0;
+const weekOf = p => {let s=0;for(let i=0;i<7;i++)s+=p.days[day(-i)]||0;return s};
+const dueKeys = p => Object.keys(p.rev).filter(k=>ITEMS[k]&&p.rev[k].due<=day()).sort((a,b)=>p.rev[a].due<p.rev[b].due?-1:1);
+const INTERVAL = [1,3,7]; // tekrar kutuları: 1, 3, 7 gün sonra
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const norm = s => s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").replace(/\s+/g," ").trim()
-  .replace(/\bi'm\b/g,"i am").replace(/\bcan't\b/g,"can not").replace(/\bcannot\b/g,"can not").replace(/\bdidn't\b/g,"did not").replace(/\blet's\b/g,"let us");
+const NUM = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".split(" ");
+const norm = s => s.toLowerCase().replace(/[’‘`]/g,"'").replace(/[^a-z0-9' ]/g," ")
+  .replace(/\b\d+\b/g,d=>+d<=20?NUM[+d]:d)
+  .replace(/\b(do|does|did|is|are|was|were|has|have|had|could|would|should|ca|wo)nt\b/g,"$1n't").replace(/\b(i)m\b/g,"i'm").replace(/\b(i|you|we|they)ve\b/g,"$1've").replace(/\b(you|they)re\b/g,"$1're").replace(/\blets\b/g,"let's")
+  .replace(/\bwon't\b/g,"will not").replace(/\bcan't\b|\bcannot\b/g,"can not").replace(/n't\b/g," not")
+  .replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'ve\b/g," have").replace(/'ll\b/g," will").replace(/'d\b/g," would")
+  .replace(/\blet's\b/g,"let us").replace(/\b(it|that|what|there|here|he|she|who|where|how)'s\b/g,"$1 is")
+  .replace(/'/g,"").replace(/\s+/g," ").trim();
+const icon = (u,size=30) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${u.svg}</svg>`;
 
 // ---- ÜST BAR ----
 function renderHeader(){
   $("#who").innerHTML = users.map(u=>`<option ${u===cur?"selected":""}>${esc(u)}</option>`).join("");
   const p = prog();
-  $("#stat").textContent = `🔥 ${p.streak} gün · ✅ ${p.total}`;
+  $("#stat").textContent = `🔥 ${streakOf(p)} gün · ✅ ${p.total}`;
 }
 $("#who").onchange = e => {cur=e.target.value;store.set("as_cur",cur);renderHeader();home()};
 $("#addWho").onclick = () => {
@@ -189,14 +538,40 @@ $("#addWho").onclick = () => {
 
 // ---- ANA SAYFA ----
 function home(){
-  const p = prog();
+  const p = prog(), due = dueKeys(p);
+  const medal = ["🥇","🥈","🥉"];
+  const board = users.map(n=>{const q=loadProg(n);return {n,week:weekOf(q),total:q.total,streak:streakOf(q)}})
+    .sort((a,b)=>b.week-a.week||b.total-a.total);
   $("#app").innerHTML = `<p class="hello">Merhaba ${esc(cur)}!</p><p class="note" style="margin-top:0">Bir ünite seç. Türkçe cümleyi gör, İngilizcesini sesli söyle.</p>
-  <div class="units">${UNITS.map(u=>{const d=u.items.filter((_,i)=>p.done[u.id+i]).length;
-    return `<button class="unit" data-u="${u.id}"><span class="u-ic" style="background:${u.ic}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${u.svg}</svg></span><span class="u-tx"><b>${esc(u.name)}</b><small>${d}/${u.items.length} tamamlandı</small><span class="u-bar"><i style="width:${d/u.items.length*100}%"></i></span></span><span class="u-go" aria-hidden="true">›</span></button>`}).join("")}</div>
+  <div class="units">
+  ${due.length?`<button class="unit rev" id="rev"><span class="u-ic" style="background:#f5c542"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><span class="u-tx"><b>Tekrar zamanı</b><small>${due.length} cümle seni bekliyor. Daha önce zorlandıkların.</small></span><span class="u-go" aria-hidden="true">›</span></button>`:""}
+  ${UNITS.map(u=>{const all=u.levels.flatMap(l=>l.items), d=all.filter(it=>p.done[it.key]).length;
+    return `<button class="unit" data-u="${u.id}"><span class="u-ic" style="background:${u.ic}">${icon(u)}</span><span class="u-tx"><b>${esc(u.name)}</b><small>${d}/${all.length} tamamlandı · 3 seviye</small><span class="u-bar"><i style="width:${d/all.length*100}%"></i></span></span><span class="u-go" aria-hidden="true">›</span></button>`}).join("")}</div>
+  <section class="lb" aria-labelledby="lbT">
+    <h2 id="lbT">Aile sıralaması <small>son 7 gün</small></h2>
+    <ol>${board.map((r,i)=>`<li class="${r.n===cur?"me":""}"><span class="lb-r">${medal[i]||i+1}</span><span class="lb-n">${esc(r.n)}</span><span class="lb-s">${r.week} doğru<small>🔥 ${r.streak} · ✅ ${r.total}</small></span></li>`).join("")}</ol>
+    ${users.length<2?`<p class="note">Aileden birini eklersen burada yarışırsınız. Sıralama bu cihazdaki profilleri gösterir.</p>`:`<p class="note">Bu cihazdaki profiller. Sıralama son 7 gündeki doğru cevaplara göre.</p>`}
+  </section>
   ${!window.isSecureContext?`<p class="note">⛔ Sayfa https ile açılmamış; mikrofon çalışmaz. GitHub Pages adresinden aç.</p>`:""}
   ${window.top!==window.self?`<p class="note">⛔ Sayfa başka bir uygulamanın içinde açılmış; mikrofon engellenebilir. Adresi Chrome/Safari'de aç.</p>`:""}
   ${SR?"":`<p class="note">⚠️ Bu tarayıcı ses tanımayı desteklemiyor; yazarak cevaplayabilirsin. Android'de Chrome, iPhone'da Safari kullan.</p>`}`;
-  document.querySelectorAll(".unit").forEach(b=>b.onclick=()=>lesson(b.dataset.u));
+  document.querySelectorAll(".unit[data-u]").forEach(b=>b.onclick=()=>unitView(b.dataset.u));
+  if(due.length) $("#rev").onclick=()=>lesson(due.slice(0,20).map(k=>ITEMS[k]),"Tekrar",home,true);
+}
+
+// ---- ÜNİTE: SEVİYE SEÇİMİ ----
+function unitView(uid){
+  const u = UNITS.find(x=>x.id===uid), p = prog();
+  $("#app").innerHTML = `<button class="btn" id="back">← Üniteler</button>
+  <div class="u-head"><span class="u-ic" style="background:${u.ic}">${icon(u)}</span><p class="hello" style="margin:0">${esc(u.name)}</p></div>
+  <div class="units">${u.levels.map(l=>{const d=l.items.filter(it=>p.done[it.key]).length;
+    return `<button class="unit" data-l="${l.id}"><span class="lv lv-${l.id}" aria-hidden="true">${"●".repeat({a:1,b:2,c:3}[l.id])}</span><span class="u-tx"><b>${esc(l.name)}</b><small>${LEVEL_NOTE[l.id]} · ${d}/${l.items.length}</small><span class="u-bar"><i style="width:${d/l.items.length*100}%"></i></span></span><span class="u-go" aria-hidden="true">›</span></button>`}).join("")}</div>`;
+  $("#back").onclick=home;
+  document.querySelectorAll(".unit[data-l]").forEach(b=>b.onclick=()=>{
+    const l=u.levels.find(x=>x.id===b.dataset.l), q=prog();
+    const first=l.items.findIndex(it=>!q.done[it.key]);
+    lesson(l.items,`${u.name} · ${l.name}`,()=>unitView(uid),false,first<0?0:first);
+  });
 }
 
 // ---- SES ----
@@ -212,22 +587,24 @@ function check(said, target){
   const hit=new Set();let i=0,j=0;
   while(i<m&&j<n){if(a[i]===t[j]){hit.add(j);i++;j++}else if(L[i+1][j]>=L[i][j+1])i++;else j++}
   const score = hit.size / n;
-  const words = target.split(" ");
-  const html = words.map((w,k)=>hit.has(k)?esc(w):`<span class="w-miss">${esc(w)}</span>`).join(" ");
+  // ekranda orijinal kelimeleri göster ("didn't" gibi kelimeler iki parçaya açıldığı için parça sayısını takip et)
+  let k=0;
+  const html = target.split(" ").map(w=>{const c=norm(w).split(" ").filter(Boolean).length;let ok=true;for(let x=0;x<c;x++)if(!hit.has(k+x))ok=false;k+=c;return ok?esc(w):`<span class="w-miss">${esc(w)}</span>`}).join(" ");
   return {score, html};
 }
 
-// ---- DERS ----
-function lesson(uid){
-  const unit = UNITS.find(u=>u.id===uid);
-  let idx = 0, rec = null, tries = 0;
+// ---- DERS (normal ve tekrar) ----
+function lesson(list, title, back, isReview=false, startAt=0){
+  let idx = startAt, rec = null, tries = 0, solved = false, nOk = 0, nRev = 0;
+  const markWrong = key => {const p=prog();if(!p.rev[key]||p.rev[key].box>0||isReview){if(!p.rev[key])nRev++;p.rev[key]={box:0,due:day(1)};saveProg(p)}};
   const show = () => {
-    const it = unit.items[idx];
+    const it = list[idx]; tries=0; solved=false;
     const blanked = esc(it.en).replace(esc(it.b), `<span class="blank">&nbsp;</span>`);
     $("#app").innerHTML = `<div class="card">
-      <div class="top"><span>🎤 Burayı çevir</span><span>${idx+1}/${unit.items.length}</span></div>
-      <div class="bar"><i style="width:${idx/unit.items.length*100}%"></i></div>
+      <div class="top"><span>${isReview?"🔁 ":""}${esc(title)}</span><span>${idx+1}/${list.length}</span></div>
+      <div class="bar"><i style="width:${idx/list.length*100}%"></i></div>
       <div class="body">
+        ${isReview?`<p class="note" style="margin:0 0 8px">${esc(it.u.name)} · ${esc(it.l.name)}</p>`:""}
         <p class="tr">${esc(it.tr)}</p>
         <p class="en">${blanked}</p>
         ${SR?`<button class="mic" id="mic" aria-label="Konuş">KONUŞ</button>`:""}
@@ -236,34 +613,41 @@ function lesson(uid){
         <p class="res" id="res" aria-live="polite"></p>
         <div class="ans" id="ans"></div>
         <div class="row">
-          <button class="btn" id="back">← Üniteler</button>
+          <button class="btn" id="back">← Geri</button>
           <button class="btn" id="hint">İpucu</button>
           <button class="btn" id="listen">🔊 Dinle</button>
           <button class="btn pri" id="next">Geç →</button>
         </div>
       </div></div>`;
-    $("#back").onclick = () => {stop();home()};
+    $("#back").onclick = () => {stop();back()};
     $("#hint").onclick = () => {$("#ans").innerHTML = `İpucu: <b>${esc(it.b)}</b>`};
     $("#listen").onclick = () => say(it.en);
-    $("#next").onclick = () => {stop();next()};
+    $("#next").onclick = () => {stop();if(!solved)markWrong(it.key);next()};
     $("#typed").onkeydown = e => {if(e.key==="Enter"&&e.target.value.trim())grade(e.target.value)};
     if(SR) $("#mic").onclick = () => rec ? stop() : start();
   };
   const grade = said => {
-    const it = unit.items[idx];
+    if(solved) return;
+    const it = list[idx];
     $("#heard").textContent = "Duyulan: “" + said + "”";
     const r = check(said, it.en);
     tries++;
     if(r.score >= .85){
+      solved = true; nOk++;
       $("#res").className="res ok";$("#res").textContent = r.score===1?"Harika! 🎉":"Çok iyi! 👍";
       $("#ans").innerHTML = esc(it.en);
       $("#next").textContent="Devam →";
-      const p=prog();
-      if(!p.done[unit.id+idx]){p.done[unit.id+idx]=1;p.total++}
-      const today=new Date().toISOString().slice(0,10), y=new Date(Date.now()-864e5).toISOString().slice(0,10);
-      if(p.last!==today){p.streak = p.last===y ? p.streak+1 : 1; p.last=today}
+      const p=prog(), t=day();
+      if(!p.done[it.key]){p.done[it.key]=1;p.total++}
+      p.days[t]=(p.days[t]||0)+1;
+      if(p.last!==t){p.streak = p.last===day(-1) ? p.streak+1 : 1; p.last=t}
+      if(isReview && tries===1 && p.rev[it.key]){
+        const box=p.rev[it.key].box+1;
+        if(box>=INTERVAL.length) delete p.rev[it.key]; else p.rev[it.key]={box,due:day(INTERVAL[box])};
+      }
       saveProg(p);renderHeader();say(it.en);
     } else {
+      if(tries===1) markWrong(it.key);
       $("#res").className="res bad";$("#res").textContent = tries>=2?"Doğrusu şu, bir daha dene:":"Tekrar dene";
       $("#ans").innerHTML = tries>=2 ? r.html : "";
     }
@@ -284,7 +668,7 @@ function lesson(uid){
       $("#heard").textContent = "… " + r[0].transcript;
       if(r.isFinal){
         // alternatifler arasından en iyisini seç
-        const it=unit.items[idx];let best=r[0].transcript,bs=-1;
+        const it=list[idx];let best=r[0].transcript,bs=-1;
         for(let k=0;k<r.length;k++){const s=check(r[k].transcript,it.en).score;if(s>bs){bs=s;best=r[k].transcript}}
         finalText=best;
       }
@@ -307,9 +691,10 @@ function lesson(uid){
     try{rec.start()}catch(x){clearTimeout(timer);status("⛔ Başlatılamadı: "+x.message);stop()}
   };
   const stop = () => {try{rec&&rec.stop()}catch{}};
-  const next = () => {idx++;tries=0;if(idx>=unit.items.length){
-      $("#app").innerHTML=`<div class="card"><div class="body"><p class="tr">🎉 “${esc(unit.name)}” bitti!</p>
-      <div class="row"><button class="btn pri" id="h">Ünitelere dön</button></div></div></div>`;$("#h").onclick=home;
+  const next = () => {idx++;if(idx>=list.length){
+      $("#app").innerHTML=`<div class="card"><div class="body"><p class="tr">🎉 ${isReview?"Tekrar":"“"+esc(title)+"”"} bitti!</p>
+      <p>${nOk} cümleyi doğru söyledin.${nRev?` ${nRev} cümle birkaç gün sonra tekrar sorulacak.`:""}</p>
+      <div class="row"><button class="btn pri" id="h">Devam</button></div></div></div>`;$("#h").onclick=back;
     } else show()};
   show();
 }
