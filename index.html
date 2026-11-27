@@ -125,6 +125,10 @@ button.w-miss{font:inherit;background:none;border:0;padding:0;color:var(--bad);t
 .clar-bar i{display:block;height:100%}
 .clar-ok i{background:var(--ok)}.clar-mid i{background:#f5c542}.clar-low i{background:var(--bad)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,140%);background:#1f3a5f;color:#fffaf0;padding:12px 20px;border-radius:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .3s;z-index:9;max-width:90vw;text-align:center}
+.p-name{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0}
+.fam-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:24px;font-weight:700;letter-spacing:1px;margin:0;color:var(--pri)}
+@media(prefers-color-scheme:dark){.fam-code{color:#f5c542}}
+.w-link{margin-top:10px;background:none;border:0;color:#f5c542;font:inherit;font-size:16px;text-decoration:underline;cursor:pointer;min-height:44px}
 .toast.on{transform:translate(-50%,0);visibility:visible}
 .toast:not(.on){visibility:hidden;transition:transform .3s,visibility 0s .3s}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -146,6 +150,7 @@ button.w-miss{font:inherit;background:none;border:0;padding:0;color:var(--bad);t
     <div class="w-who" id="wWho" role="group" aria-labelledby="wWhoL"></div>
     <button class="w-go" id="wGo" type="button">Başla</button>
     <p class="w-stat" id="wStat"></p>
+    <button class="w-link" id="wSync" type="button" hidden>☁️ Aileyle eşitle</button>
   </div>
 </section>
 <header>
@@ -599,7 +604,7 @@ function loadProg(name){
   return p;
 }
 const prog = () => loadProg(cur);
-const saveProg = p => store.set("as_p_"+cur,p);
+const saveProg = p => {p.upd=Date.now();store.set("as_p_"+cur,p);Sync.soon()};
 const streakOf = p => (p.last===day()||p.last===day(-1)) ? p.streak : 0;
 const weekOf = p => {let s=0;for(let i=0;i<7;i++)s+=p.days[day(-i)]||0;return s};
 const dueKeys = p => Object.keys(p.rev).filter(k=>ITEMS[k]&&p.rev[k].due<=day()).sort((a,b)=>p.rev[a].due<p.rev[b].due?-1:1);
@@ -639,6 +644,105 @@ const norm = s => s.toLowerCase().replace(/[’‘`]/g,"'").replace(/[^a-z0-9' ]
   .replace(/'/g,"").replace(/\s+/g," ").trim();
 const icon = (u,size=30) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${u.svg}</svg>`;
 
+
+// ---- AİLE SENKRONU (Supabase) ----
+const SUPA = {url:"https://urmazauoehatvlribdit.supabase.co",
+  key:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybWF6YXVvZWhhdHZscmliZGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3ODAwNzUsImV4cCI6MjExMTM1NjA3NX0.d4H8hKRmEd3S9jRILJebt8VSAozBEkGHR-1JWQIXP9k"};
+const VAPID_PUB = "BAL-5Q4-_i5hMR1RG19Qf17iL6QP4-J53Pec869IQqRCe9cZN4JbrmJyJuyU9B_tLi4paK7xcdHKqX4rEEKiXPY";
+async function rpc(fn,args){
+  const r=await fetch(`${SUPA.url}/rest/v1/rpc/${fn}`,{method:"POST",headers:{apikey:SUPA.key,Authorization:"Bearer "+SUPA.key,"Content-Type":"application/json"},body:JSON.stringify(args)});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+// İki cihazdaki ilerlemeyi birleştir: hiçbir doğru cevap kaybolmasın.
+function mergeProg(a,b){
+  a=a||{}; b=b||{};
+  const newer=(a.upd||0)>=(b.upd||0)?a:b, m={...b,...a};
+  m.done={...(b.done||{}),...(a.done||{})};
+  m.days={...(b.days||{})}; for(const k in a.days||{}) m.days[k]=Math.max(a.days[k],m.days[k]||0);
+  m.badges={...(a.badges||{}),...(b.badges||{})};
+  for(const k in a.badges||{}) if(b.badges&&b.badges[k]) m.badges[k]=a.badges[k]<b.badges[k]?a.badges[k]:b.badges[k];
+  m.rev={...(b.rev||{}),...(a.rev||{})};
+  for(const k in m.rev) if(a.rev&&b.rev&&a.rev[k]&&b.rev[k]) m.rev[k]=(a.rev[k].due<b.rev[k].due)?a.rev[k]:b.rev[k];
+  for(const k of ["pts","words","revOk","goalDays","best"]) m[k]=Math.max(a[k]||0,b[k]||0);
+  const la=a.last||"", lb=b.last||"";
+  if(la!==lb){const w=la>lb?a:b;m.last=w.last;m.streak=w.streak||0}else{m.last=la;m.streak=Math.max(a.streak||0,b.streak||0)}
+  m.goal=newer.goal||m.goal; if(newer.rep!==undefined) m.rep=newer.rep;
+  m.total=Object.keys(m.done).length; m.v=2; m.upd=Math.max(a.upd||0,b.upd||0);
+  return m;
+}
+const Sync = {
+  code: store.get("as_fam",""), status:"", busy:false, t:null, lastOk: store.get("as_fam_ok",""),
+  soon(){ if(!this.code) return; clearTimeout(this.t); this.t=setTimeout(()=>this.run(),2500) },
+  async run(dropEmpty=false){
+    if(!this.code||this.busy) return; this.busy=true;
+    try{
+      const res=await rpc("family_pull",{p_code:this.code});
+      if(res===null){this.status="⚠️ Aile kodu bulunamadı";return}
+      const remote=res.profiles||[];
+      if(dropEmpty && remote.length){ // yeni katılan cihazdaki boş profilleri gönderme
+        users=users.filter(n=>remote.some(r=>r.name===n)||loadProg(n).total>0);
+      }
+      for(const r of remote){
+        const local=store.get("as_p_"+r.name,null);
+        store.set("as_p_"+r.name, local?mergeProg(local,r.data):r.data);
+        if(!users.includes(r.name)) users.push(r.name);
+      }
+      if(!users.length) users=["Ben"];
+      if(!users.includes(cur)){cur=users[0];store.set("as_cur",cur)}
+      store.set("as_users",users);
+      for(const n of users){
+        const d=store.get("as_p_"+n,null)||loadProg(n), r=remote.find(x=>x.name===n);
+        if(!r || JSON.stringify(r.data)!==JSON.stringify(d)) await rpc("family_push",{p_code:this.code,p_name:n,p_data:d});
+      }
+      const t=new Date(); this.lastOk=String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
+      store.set("as_fam_ok",this.lastOk); this.status="";
+    }catch(e){ this.status="📴 Çevrimdışı, bağlantı gelince eşitlenecek"; }
+    finally{ this.busy=false; this.refresh(); }
+  },
+  refresh(){ // ekranı tazele ama ders ortasındaysa dokunma
+    if(document.body.classList.contains("intro")) welcome();
+    else { renderHeader(); const v=document.body.dataset.view; if(v==="home")home(); else if(v==="profile")profile(); }
+  }
+};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")Sync.run()});
+window.addEventListener("online",()=>Sync.run());
+
+async function renameUser(oldN,newN){
+  newN=newN.trim();
+  if(!newN||newN===oldN) return "same";
+  if(users.includes(newN)) return "exists";
+  if(Sync.code){ try{ const r=await rpc("family_rename",{p_code:Sync.code,p_old:oldN,p_new:newN}); if(r==="exists")return "exists"; }catch(e){ return "offline"; } }
+  store.set("as_p_"+newN,store.get("as_p_"+oldN,{})); try{localStorage.removeItem("as_p_"+oldN)}catch{}
+  users=users.map(u=>u===oldN?newN:u); store.set("as_users",users);
+  if(cur===oldN){cur=newN;store.set("as_cur",cur)}
+  const ps=store.get("as_push",null); if(ps&&ps.name===oldN){ps.name=newN;store.set("as_push",ps)}
+  return "ok";
+}
+
+// ---- BİLDİRİM (web push) ----
+const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+const standalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const pushOK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+const b64u = s => {const p="=".repeat((4-s.length%4)%4),b=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+async function pushOn(hour){
+  if(await Notification.requestPermission()!=="granted") throw new Error("izin");
+  const reg=await navigator.serviceWorker.ready;
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUB)});
+  const j=sub.toJSON();
+  if(!await rpc("push_save",{p_code:Sync.code,p_name:cur,p_sub:j,p_hour:hour})) throw new Error("kod");
+  store.set("as_push",{name:cur,hour,endpoint:j.endpoint});
+  fetch(`${SUPA.url}/functions/v1/remind`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({test:true,code:Sync.code,endpoint:j.endpoint})}).catch(()=>{});
+}
+async function pushOff(){
+  const ps=store.get("as_push",null);
+  try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe()}catch{}
+  if(ps) try{await rpc("push_remove",{p_endpoint:ps.endpoint})}catch{}
+  store.set("as_push",null);
+}
+
 // ---- ÜST BAR ----
 function renderHeader(){
   $("#who").innerHTML = users.map(u=>`<option ${u===cur?"selected":""}>${esc(u)}</option>`).join("");
@@ -658,6 +762,7 @@ $("#addWho").onclick = () => {
 
 // ---- ANA SAYFA ----
 function home(){
+  document.body.dataset.view="home";
   const p = prog(), due = dueKeys(p);
   const medal = ["🥇","🥈","🥉"];
   const board = users.map(n=>{const q=loadProg(n);return {n,week:weekOf(q),total:q.total,streak:streakOf(q),pts:q.pts,nb:Object.keys(q.badges).length}})
@@ -684,9 +789,12 @@ function home(){
 
 // ---- PROFİL: puan, kelime sayacı, hedef, rozetler ----
 function profile(){
-  const p=prog(), td=p.days[day()]||0;
+  document.body.dataset.view="profile";
+  const p=prog(), td=p.days[day()]||0, ps=store.get("as_push",null);
+  const hours=[17,18,19,20,21,22];
   $("#app").innerHTML = `<button class="btn" id="back">← Üniteler</button>
-  <p class="hello">${esc(cur)}</p>
+  <div class="p-name"><p class="hello" style="margin:0">${esc(cur)}</p><button class="btn" id="ren">✏️ Adını değiştir</button></div>
+  <div id="renBox"></div>
   <div class="stats">
     <div><b>⭐ ${p.pts}</b><small>puan</small></div>
     <div><b>🗣️ ${p.words}</b><small>söylediğin kelime</small></div>
@@ -697,6 +805,26 @@ function profile(){
     <div class="goal-row">${ring(td,p.goal,72)}<p style="margin:0">Bugün <b>${td}/${p.goal}</b> cümle. Hedefini ${p.goalDays} gün tamamladın.</p></div>
     <div class="row" style="justify-content:flex-start;margin:12px 0 14px" role="group" aria-label="Günlük hedef">${[5,10,20,30].map(g=>`<button class="btn ${g===p.goal?"pri":""}" data-g="${g}" aria-pressed="${g===p.goal}">${g} cümle</button>`).join("")}</div>
   </section>
+  <section class="lb"><h2>☁️ Aile senkronu</h2>
+    ${Sync.code?`<p style="margin:0 0 6px">Aile kodunuz:</p><p class="fam-code">${esc(Sync.code)}</p>
+      <p class="note" style="margin:4px 0 10px">Diğer telefonlarda bu kodu girin; profiller, ilerleme ve sıralama ortak olur. Kodu sadece ailenizle paylaşın.</p>
+      <p class="note" style="margin:0 0 10px">${Sync.status||(Sync.lastOk?"✅ Son eşitleme: "+Sync.lastOk:"")}</p>
+      <div class="row" style="justify-content:flex-start;margin:0 0 14px"><button class="btn" id="fCopy">Kodu kopyala</button><button class="btn" id="fSync">Şimdi eşitle</button><button class="btn" id="fLeave">Bu cihazdan çık</button></div>`
+    :`<p style="margin:0 0 10px">Aynı ilerlemeyi bütün telefonlarda görmek için bir aile kodu kullanın.</p>
+      <div class="row" style="justify-content:flex-start;margin:0 0 10px"><button class="btn pri" id="fNew">Yeni aile kodu oluştur</button></div>
+      <p class="note" style="margin:0 0 6px">Başka telefonda kod oluşturduysanız buraya girin:</p>
+      <div class="w-add" style="max-width:none;margin-bottom:6px"><input type="text" id="fCode" placeholder="LAFLA-XXXX-XXXX" autocapitalize="characters" autocomplete="off" aria-label="Aile kodu"><button class="btn pri" id="fJoin">Bağlan</button></div>
+      <p class="note" id="fMsg" style="margin:0 0 14px"></p>`}
+  </section>
+  <section class="lb"><h2>🔔 Hatırlatma</h2>
+    ${!Sync.code?`<p class="note" style="margin:0 0 14px">Hatırlatma için önce yukarıdan aile kodu oluşturun ya da girin.</p>`
+    :!pushOK||(isIOS&&!standalone)?`<p class="note" style="margin:0 0 14px">${isIOS?"iPhone'da bildirim için Lafla'yı Safari'de açıp Paylaş › <b>Ana Ekrana Ekle</b> ile ekleyin ve ana ekrandaki simgeden açın.":"Bu tarayıcı bildirimleri desteklemiyor. Android'de Chrome kullanın."}</p>`
+    :ps?`<p style="margin:0 0 10px">Bu telefon <b>${esc(ps.name)}</b> için her gün saat <b>${ps.hour}:00</b>'da, hedef tamamlanmadıysa hatırlatıyor.</p>
+      <div class="row" style="justify-content:flex-start;margin:0 0 14px"><button class="btn" id="pOff">Hatırlatmayı kapat</button></div>`
+    :`<p style="margin:0 0 10px">Günlük hedefin tamamlanmadıysa bu telefona akşam bildirim gelsin:</p>
+      <div class="row" style="justify-content:flex-start;margin:0 0 8px" role="group" aria-label="Hatırlatma saati">${hours.map(h=>`<button class="btn ${h===20?"pri":""}" data-h="${h}">${h}:00</button>`).join("")}</div>
+      <p class="note" id="pMsg" style="margin:0 0 14px">Bir saat seç; telefon bildirim izni isteyecek.</p>`}
+  </section>
   <section class="lb"><h2>Ayarlar</h2>
     <label class="tog"><input type="checkbox" id="repT" ${p.rep?"checked":""}> <span><b>Önce dinle ve tekrar et</b><br><small>Yeni bir cümleyi önce tamamını dinleyip tekrar edersin, sonra boşluklu haliyle söylersin.</small></span></label>
   </section>
@@ -706,10 +834,34 @@ function profile(){
   $("#back").onclick=home;
   document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const q=prog();q.goal=+b.dataset.g;saveProg(q);profile()});
   $("#repT").onchange=e=>{const q=prog();q.rep=e.target.checked;saveProg(q)};
+  $("#ren").onclick=()=>{
+    $("#renBox").innerHTML=`<div class="w-add" style="max-width:none;margin:8px 0"><input type="text" id="rnI" maxlength="20" value="${esc(cur)}" aria-label="Yeni ad"><button class="btn pri" id="rnOk">Kaydet</button></div><p class="note" id="rnM" style="margin:0"></p>`;
+    const i=$("#rnI");i.focus();i.select();
+    const go=async()=>{const r=await renameUser(cur,i.value);
+      if(r==="ok"||r==="same"){renderHeader();profile()} else $("#rnM").textContent=r==="exists"?"Bu isimde biri zaten var.":"İnternet bağlantısı gerekli, sonra tekrar dene."};
+    $("#rnOk").onclick=go; i.onkeydown=e=>{if(e.key==="Enter")go()};
+  };
+  if(Sync.code){
+    if($("#fCopy")) $("#fCopy").onclick=async()=>{try{await navigator.clipboard.writeText(Sync.code);toast("📋 Kod kopyalandı")}catch{toast(Sync.code)}};
+    if($("#fSync")) $("#fSync").onclick=()=>{Sync.status="⏳ Eşitleniyor…";profile();Sync.run()};
+    if($("#fLeave")) $("#fLeave").onclick=()=>{Sync.code="";store.set("as_fam","");profile()};
+  } else {
+    $("#fNew").onclick=async()=>{$("#fNew").disabled=true;try{Sync.code=await rpc("create_family",{});store.set("as_fam",Sync.code);await Sync.run();toast("☁️ Aile kodu oluşturuldu")}catch{toast("📴 İnternet bağlantısı gerekli")}profile()};
+    const join=async()=>{const c=$("#fCode").value.trim().toUpperCase();if(!c)return;$("#fMsg").textContent="⏳ Bağlanıyor…";
+      try{const r=await rpc("family_pull",{p_code:c});if(r===null){$("#fMsg").textContent="Bu kod bulunamadı, kontrol edip tekrar dene.";return}
+        Sync.code=c;store.set("as_fam",c);await Sync.run(true);toast("☁️ Aileye bağlandı");profile()}catch{$("#fMsg").textContent="📴 İnternet bağlantısı gerekli."}};
+    $("#fJoin").onclick=join; $("#fCode").onkeydown=e=>{if(e.key==="Enter")join()};
+  }
+  document.querySelectorAll("[data-h]").forEach(b=>b.onclick=async()=>{
+    $("#pMsg").textContent="⏳ Açılıyor…";
+    try{await pushOn(+b.dataset.h);toast("🔔 Hatırlatma açıldı");profile()}
+    catch(e){$("#pMsg").textContent=e.message==="izin"?"Bildirim izni verilmedi. Telefon ayarlarından Lafla'ya bildirim izni verip tekrar dene.":"Açılamadı, internet bağlantısını kontrol edip tekrar dene."}});
+  if($("#pOff")) $("#pOff").onclick=async()=>{await pushOff();profile()};
 }
 
 // ---- ÜNİTE: SEVİYE SEÇİMİ ----
 function unitView(uid){
+  document.body.dataset.view="unit";
   const u = UNITS.find(x=>x.id===uid), p = prog();
   $("#app").innerHTML = `<button class="btn" id="back">← Üniteler</button>
   <div class="u-head"><span class="u-ic" style="background:${u.ic}">${icon(u)}</span><p class="hello" style="margin:0">${esc(u.name)}</p></div>
@@ -744,6 +896,7 @@ function check(said, target){
 
 // ---- DERS (normal ve tekrar) ----
 function lesson(list, title, back, isReview=false, startAt=0){
+  document.body.dataset.view="lesson";
   let idx = startAt, rec = null, tries = 0, solved = false, nOk = 0, nRev = 0, stage = "main";
   const markWrong = key => {const p=prog();if(!p.rev[key]||p.rev[key].box>0||isReview){if(!p.rev[key])nRev++;p.rev[key]={box:0,due:day(1)};saveProg(p)}};
   const bindSay = () => document.querySelectorAll("#ans [data-say]").forEach(b=>b.onclick=()=>say(b.dataset.say));
@@ -894,11 +1047,13 @@ function welcome(){
     : left<=0 ? `🎯 Bugünkü hedef tamam · 🔥 ${streakOf(p)} gün · ⭐ ${p.pts}`
     : td===0 ? `🔔 Bugün henüz pratik yapmadın. Hedef: ${p.goal} cümle${streakOf(p)?` · 🔥 ${streakOf(p)} günlük serini koru!`:""}`
     : `Bugün ${td}/${p.goal} cümle · hedefe ${left} kaldı · ⭐ ${p.pts}`;
+  $("#wSync").hidden=!!Sync.code;
 }
+$("#wSync").onclick=()=>{document.body.classList.remove("intro");renderHeader();profile();window.scrollTo(0,0)};
 $("#wGo").onclick=()=>{document.body.classList.remove("intro");renderHeader();home();window.scrollTo(0,0)};
 $("#toWelcome").onclick=()=>{try{speechSynthesis.cancel()}catch{}welcome()};
 
-renderHeader();welcome();
+renderHeader();welcome();Sync.run();
 }
 </script>
 </body>
