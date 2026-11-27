@@ -6,13 +6,17 @@
 <meta name="theme-color" content="#1f3a5f">
 <meta name="apple-mobile-web-app-title" content="Lafla">
 <meta name="application-name" content="Lafla">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Lafla</title>
 <style>
 :root{color-scheme:light dark;--bg:light-dark(#fffaf0,#14181d);--card:light-dark(#fff,#1f252d);--ink:light-dark(#1d2530,#eef1f4);--mut:light-dark(#6b7480,#9aa4ae);--pri:#1f3a5f;--hon:#f5c542;--ok:#2e8b57;--bad:#c8402f;--line:light-dark(#ece4d2,#2c333c)}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 header{background:var(--pri);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-header h1{font-size:20px;margin:0;flex:1}
+header h1{font-size:20px;margin:0;flex:1;display:flex;align-items:center;gap:8px}
 header select,header button{font:inherit;font-size:15px;border:0;border-radius:10px;padding:8px 10px}
 .stat{font-size:14px;opacity:.9}
 main{max-width:640px;margin:0 auto;padding:16px}
@@ -45,7 +49,7 @@ input[type=text]{font:inherit;font-size:16px;width:100%;padding:12px;border-radi
 </head>
 <body>
 <header>
-  <h1>💬 Lafla</h1>
+  <h1><img src="logo.svg" alt="" width="32" height="32"> Lafla</h1>
   <select id="who" aria-label="Kullanıcı"></select>
   <button id="addWho" type="button">+ Kişi</button>
   <span class="stat" id="stat"></span>
