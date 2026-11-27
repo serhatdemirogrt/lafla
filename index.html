@@ -10,6 +10,9 @@
 <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <title>Lafla</title>
 <style>
 :root{color-scheme:light dark;--bg:light-dark(#fffaf0,#14181d);--card:light-dark(#fff,#1f252d);--ink:light-dark(#1d2530,#eef1f4);--mut:light-dark(#6b7480,#9aa4ae);--pri:#1f3a5f;--hon:#f5c542;--ok:#2e8b57;--bad:#c8402f;--line:light-dark(#ece4d2,#2c333c)}
@@ -45,11 +48,66 @@ input[type=text]{font:inherit;font-size:16px;width:100%;padding:12px;border-radi
 .unit small{color:var(--mut)}
 .note{color:var(--mut);font-size:14px}
 :focus-visible{outline:3px solid var(--hon);outline-offset:2px}
+.brand{font-family:"Baloo 2",system-ui,sans-serif}
+header h1 button{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;border-radius:8px}
+/* ---- GİRİŞ EKRANI ---- */
+body.intro header,body.intro main{display:none}
+.welcome{display:none}
+body.intro .welcome{display:flex}
+.welcome{position:relative;overflow:hidden;min-height:100vh;min-height:100svh;background:#1f3a5f;color:#fffaf0;align-items:center;justify-content:center;padding:40px 20px calc(40px + env(safe-area-inset-bottom))}
+.w-deco{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.w-in{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.w-logo{width:148px;height:148px;border-radius:36px;box-shadow:0 18px 40px rgba(6,16,30,.45),0 0 0 6px rgba(255,250,240,.08);animation:pop .7s cubic-bezier(.2,1.4,.4,1) both}
+.w-name{font-family:"Baloo 2",system-ui,sans-serif;font-weight:800;font-size:68px;line-height:1;margin:26px 0 6px;letter-spacing:-.5px;animation:up .6s .15s both}
+.w-tag{font-size:19px;margin:0;color:#d9e2ec;animation:up .6s .25s both}
+.w-tag b{color:#f5c542}
+.w-who-l{margin:40px 0 12px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#aebccb;animation:up .6s .35s both}
+.w-who{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:up .6s .4s both}
+.chip{font:inherit;font-size:17px;font-weight:600;min-height:48px;padding:10px 20px;border-radius:999px;border:2px solid rgba(255,250,240,.35);background:transparent;color:#fffaf0;cursor:pointer}
+.chip[aria-pressed=true]{background:#fffaf0;border-color:#fffaf0;color:#1f3a5f}
+.chip.add{border-style:dashed;color:#d9e2ec}
+.w-add{display:flex;gap:8px;width:100%;max-width:320px}
+.w-add input{margin:0;background:#fffaf0;color:#1d2530;border:0}
+.w-go{margin-top:36px;width:100%;max-width:320px;min-height:60px;border:0;border-radius:18px;background:#f5c542;color:#1f3a5f;font:inherit;font-family:"Baloo 2",system-ui,sans-serif;font-size:24px;font-weight:800;cursor:pointer;box-shadow:0 8px 0 #c99a16;transition:transform .1s,box-shadow .1s;animation:up .6s .5s both}
+.w-go:active{transform:translateY(6px);box-shadow:0 2px 0 #c99a16}
+.w-stat{margin:18px 0 0;font-size:15px;color:#aebccb;min-height:1.5em}
+@keyframes pop{from{opacity:0;transform:scale(.6) rotate(-8deg)}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@media(prefers-reduced-motion:reduce){.w-logo,.w-name,.w-tag,.w-who-l,.w-who,.w-go{animation:none}}
+/* ---- ÜNİTE KARTLARI ---- */
+.hello{font-family:"Baloo 2",system-ui,sans-serif;font-size:30px;font-weight:800;color:var(--ink);margin:8px 0 2px}
+.units{gap:14px}
+.unit{gap:16px;padding:16px;border-radius:20px;justify-content:flex-start;transition:transform .12s}
+.unit:active{transform:scale(.98)}
+.u-ic{flex:none;width:60px;height:60px;border-radius:16px;display:grid;place-items:center}
+.u-tx{flex:1;display:flex;flex-direction:column;gap:6px}
+.u-tx b{font-size:19px}
+.u-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.u-bar i{display:block;height:100%;border-radius:99px;background:var(--pri)}
+@media(prefers-color-scheme:dark){.u-bar i{background:var(--hon)}}
+.u-go{flex:none;color:var(--mut);font-size:22px}
 </style>
 </head>
-<body>
+<body class="intro">
+<section class="welcome" aria-label="Lafla giriş">
+  <svg class="w-deco" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path d="M-30 90h150a24 24 0 0 1 24 24v60a24 24 0 0 1-24 24H40l-30 26v-26h-40z" fill="#f5c542" opacity=".09"/>
+    <path d="M290 40h120v110H330l-26 24v-24h-14a24 24 0 0 1-24-24V64a24 24 0 0 1 24-24z" fill="#fffaf0" opacity=".06"/>
+    <path d="M300 600h110v120h-90a24 24 0 0 1-24-24v-72a24 24 0 0 1 24-24z" fill="#f5c542" opacity=".08"/>
+    <path d="M-10 640h96a24 24 0 0 1 24 24v50a24 24 0 0 1-24 24H58l-22 20v-20h-46z" fill="#fffaf0" opacity=".05"/>
+  </svg>
+  <div class="w-in">
+    <img class="w-logo" src="icon-512.png" alt="Lafla logosu" width="148" height="148">
+    <h1 class="w-name">Lafla</h1>
+    <p class="w-tag">Türkçesini gör, İngilizcesini <b>söyle</b>.</p>
+    <p class="w-who-l" id="wWhoL">Kim pratik yapacak?</p>
+    <div class="w-who" id="wWho" role="group" aria-labelledby="wWhoL"></div>
+    <button class="w-go" id="wGo" type="button">Başla</button>
+    <p class="w-stat" id="wStat"></p>
+  </div>
+</section>
 <header>
-  <h1><img src="logo.svg" alt="" width="32" height="32"> Lafla</h1>
+  <h1><button type="button" id="toWelcome" aria-label="Giriş ekranına dön"><img src="logo.svg" alt="" width="32" height="32"> <span class="brand">Lafla</span></button></h1>
   <select id="who" aria-label="Kullanıcı"></select>
   <button id="addWho" type="button">+ Kişi</button>
   <span class="stat" id="stat"></span>
@@ -60,7 +118,7 @@ input[type=text]{font:inherit;font-size:16px;width:100%;padding:12px;border-radi
 {
 // ---- DERS İÇERİĞİ: tr = Türkçe, en = doğru cevap, b = boşluk yapılacak kelime(ler) ----
 const UNITS = [
- {id:"gunluk", name:"Günlük hayat", items:[
+ {id:"gunluk", name:"Günlük Hayat", ic:"#fde9a9", svg:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>', items:[
   {tr:"Fotoğrafımı çekebilir misin?", en:"Can you take a photo of me?", b:"take"},
   {tr:"Bugün çok yorgunum.", en:"I am very tired today.", b:"tired"},
   {tr:"Su içmek istiyorum.", en:"I want to drink water.", b:"drink"},
@@ -72,7 +130,7 @@ const UNITS = [
   {tr:"Biraz daha yavaş konuşur musun?", en:"Can you speak a little slower?", b:"slower"},
   {tr:"Telefonumu bulamıyorum.", en:"I can't find my phone.", b:"find"}
  ]},
- {id:"tatil", name:"Tatil & seyahat", items:[
+ {id:"tatil", name:"Tatil ve Seyahat", ic:"#cfe3f7", svg:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>', items:[
   {tr:"Tuvalet nerede?", en:"Where is the toilet?", b:"Where"},
   {tr:"Hesabı alabilir miyim?", en:"Can I have the bill?", b:"bill"},
   {tr:"Bir oda ayırttım.", en:"I booked a room.", b:"booked"},
@@ -84,7 +142,7 @@ const UNITS = [
   {tr:"Kayboldum.", en:"I am lost.", b:"lost"},
   {tr:"Bir fotoğraf daha çekelim.", en:"Let's take one more photo.", b:"one more"}
  ]},
- {id:"okul", name:"Okul & iş", items:[
+ {id:"okul", name:"Okul ve İş", ic:"#d7efd9", svg:'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 7h7M9 11h5"/>', items:[
   {tr:"Ödevimi bitirdim.", en:"I finished my homework.", b:"finished"},
   {tr:"Bir sorum var.", en:"I have a question.", b:"question"},
   {tr:"Toplantı kaçta başlıyor?", en:"What time does the meeting start?", b:"start"},
@@ -132,9 +190,9 @@ $("#addWho").onclick = () => {
 // ---- ANA SAYFA ----
 function home(){
   const p = prog();
-  $("#app").innerHTML = `<p class="note">Merhaba ${esc(cur)}! Bir ünite seç. Türkçe cümleyi gör, İngilizcesini sesli söyle.</p>
+  $("#app").innerHTML = `<p class="hello">Merhaba ${esc(cur)}!</p><p class="note" style="margin-top:0">Bir ünite seç. Türkçe cümleyi gör, İngilizcesini sesli söyle.</p>
   <div class="units">${UNITS.map(u=>{const d=u.items.filter((_,i)=>p.done[u.id+i]).length;
-    return `<button class="unit" data-u="${u.id}"><span><b>${esc(u.name)}</b><br><small>${d}/${u.items.length} tamamlandı</small></span><span>▶</span></button>`}).join("")}</div>
+    return `<button class="unit" data-u="${u.id}"><span class="u-ic" style="background:${u.ic}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${u.svg}</svg></span><span class="u-tx"><b>${esc(u.name)}</b><small>${d}/${u.items.length} tamamlandı</small><span class="u-bar"><i style="width:${d/u.items.length*100}%"></i></span></span><span class="u-go" aria-hidden="true">›</span></button>`}).join("")}</div>
   ${!window.isSecureContext?`<p class="note">⛔ Sayfa https ile açılmamış; mikrofon çalışmaz. GitHub Pages adresinden aç.</p>`:""}
   ${window.top!==window.self?`<p class="note">⛔ Sayfa başka bir uygulamanın içinde açılmış; mikrofon engellenebilir. Adresi Chrome/Safari'de aç.</p>`:""}
   ${SR?"":`<p class="note">⚠️ Bu tarayıcı ses tanımayı desteklemiyor; yazarak cevaplayabilirsin. Android'de Chrome, iPhone'da Safari kullan.</p>`}`;
@@ -256,7 +314,26 @@ function lesson(uid){
   show();
 }
 
-renderHeader();home();
+// ---- GİRİŞ EKRANI ----
+function welcome(){
+  document.body.classList.add("intro");
+  const box=$("#wWho");
+  box.innerHTML = users.map(u=>`<button type="button" class="chip" aria-pressed="${u===cur}" data-u="${esc(u)}">${esc(u)}</button>`).join("")
+    + `<button type="button" class="chip add" id="wAdd">+ Kişi ekle</button>`;
+  box.querySelectorAll(".chip[data-u]").forEach(b=>b.onclick=()=>{cur=b.dataset.u;store.set("as_cur",cur);welcome()});
+  $("#wAdd").onclick=()=>{
+    box.innerHTML=`<div class="w-add"><input type="text" id="wNew" maxlength="20" placeholder="Adı" aria-label="Yeni kişinin adı"><button type="button" class="btn pri" id="wOk">Ekle</button></div>`;
+    const inp=$("#wNew"); inp.focus();
+    const ok=()=>{const n=inp.value.trim();if(n&&!users.includes(n)){users.push(n);store.set("as_users",users)}if(n){cur=n;store.set("as_cur",cur)}welcome()};
+    $("#wOk").onclick=ok; inp.onkeydown=e=>{if(e.key==="Enter")ok();if(e.key==="Escape")welcome()};
+  };
+  const p=prog();
+  $("#wStat").textContent = p.total ? `🔥 ${p.streak} gün seri · ✅ ${p.total} cümle` : `Merhaba ${cur}, ilk cümlen seni bekliyor.`;
+}
+$("#wGo").onclick=()=>{document.body.classList.remove("intro");renderHeader();home();window.scrollTo(0,0)};
+$("#toWelcome").onclick=()=>{try{speechSynthesis.cancel()}catch{}welcome()};
+
+renderHeader();welcome();
 }
 </script>
 </body>
