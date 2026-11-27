@@ -102,6 +102,32 @@ body.intro .welcome{display:flex}
 .lb-n{flex:1;font-weight:600}
 .lb-s{text-align:right;font-weight:700;display:flex;flex-direction:column}
 .lb-s small{font-weight:400;font-size:13px;color:var(--mut)}
+header .stat{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
+.goal{display:flex;align-items:center;gap:14px;width:100%;margin:4px 0 14px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:20px;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.goal small{color:var(--mut)}
+.goal-row{display:flex;align-items:center;gap:14px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 4px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column}
+.stats b{font-size:24px}.stats small{color:var(--mut)}
+.lb + .lb{margin-top:14px}
+.tog{display:flex;gap:12px;align-items:flex-start;padding:4px 0 14px;cursor:pointer}
+.tog input{width:22px;height:22px;margin-top:3px;accent-color:#1f3a5f;flex:none}
+.tog small{color:var(--mut)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding-bottom:14px}
+.badge{border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:2px;background:light-dark(#fffaf0,#1a1f26)}
+.badge span{font-size:32px}.badge small{color:var(--mut);font-size:12px;line-height:1.3}
+.badge.off{opacity:.45;filter:grayscale(1)}
+.en.full{color:var(--pri)}
+@media(prefers-color-scheme:dark){.en.full{color:#f5c542}}
+button.w-miss{font:inherit;background:none;border:0;padding:0;color:var(--bad);text-decoration:underline;cursor:pointer}
+.clar{display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;margin:2px 0 6px}
+.clar-bar{width:110px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.clar-bar i{display:block;height:100%}
+.clar-ok i{background:var(--ok)}.clar-mid i{background:#f5c542}.clar-low i{background:var(--bad)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,140%);background:#1f3a5f;color:#fffaf0;padding:12px 20px;border-radius:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .3s;z-index:9;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0);visibility:visible}
+.toast:not(.on){visibility:hidden;transition:transform .3s,visibility 0s .3s}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
 </head>
 <body class="intro">
@@ -126,9 +152,10 @@ body.intro .welcome{display:flex}
   <h1><button type="button" id="toWelcome" aria-label="Giriş ekranına dön"><img src="logo.svg" alt="" width="32" height="32"> <span class="brand">Lafla</span></button></h1>
   <select id="who" aria-label="Kullanıcı"></select>
   <button id="addWho" type="button">+ Kişi</button>
-  <span class="stat" id="stat"></span>
+  <button type="button" class="stat" id="stat" aria-label="Profil, puan ve rozetler"></button>
 </header>
 <main id="app"></main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 {
@@ -472,6 +499,74 @@ const UNITS = [
    {tr:"Kariyerimde yeni bir yön arıyorum.", en:"I'm looking for a new direction in my career.", b:"direction"},
    {tr:"Hedeflerime ulaşmak için çok çalışıyorum.", en:"I'm working hard to reach my goals.", b:"goals"}
   ]}
+ ]},
+ {id:"cocuk", name:"Çocuk", ic:"#f7d4cc", svg:'<path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1 6L12 16.8 6.7 19.6l1-6L3.3 9.4l6-.9z"/>', levels:[
+  {id:"a", name:"Başlangıç", items:[
+   {tr:"Bu bir kedi.", en:"This is a cat.", b:"cat"},
+   {tr:"Köpek havlıyor.", en:"The dog is barking.", b:"barking"},
+   {tr:"Elma kırmızı.", en:"The apple is red.", b:"red"},
+   {tr:"Gökyüzü mavi.", en:"The sky is blue.", b:"blue"},
+   {tr:"Benim bir topum var.", en:"I have a ball.", b:"ball"},
+   {tr:"Hadi oynayalım!", en:"Let's play!", b:"play"},
+   {tr:"Ben altı yaşındayım.", en:"I am six years old.", b:"six"},
+   {tr:"Annemi seviyorum.", en:"I love my mom.", b:"love"},
+   {tr:"Bu benim oyuncağım.", en:"This is my toy.", b:"toy"},
+   {tr:"Kuş uçuyor.", en:"The bird is flying.", b:"flying"},
+   {tr:"Bir, iki, üç!", en:"One, two, three!", b:"three"},
+   {tr:"Muz sarı.", en:"The banana is yellow.", b:"yellow"},
+   {tr:"Ben mutluyum.", en:"I am happy.", b:"happy"},
+   {tr:"Balık yüzüyor.", en:"The fish is swimming.", b:"fish"},
+   {tr:"Dişlerimi fırçalıyorum.", en:"I brush my teeth.", b:"teeth"},
+   {tr:"Kurabiye istiyorum.", en:"I want a cookie.", b:"cookie"},
+   {tr:"Güneş parlıyor.", en:"The sun is shining.", b:"shining"},
+   {tr:"Arkadaşım nerede?", en:"Where is my friend?", b:"friend"},
+   {tr:"Haydi zıplayalım!", en:"Let's jump!", b:"jump"},
+   {tr:"Teşekkürler, anne!", en:"Thank you, Mom!", b:"Mom"}
+  ]},
+  {id:"b", name:"Orta", items:[
+   {tr:"En sevdiğim renk yeşil.", en:"My favorite color is green.", b:"favorite"},
+   {tr:"Benim iki kız kardeşim var.", en:"I have two sisters.", b:"sisters"},
+   {tr:"Parkta oynamak istiyorum.", en:"I want to play in the park.", b:"park"},
+   {tr:"Bu resmi ben çizdim.", en:"I drew this picture.", b:"drew"},
+   {tr:"Fil çok büyük.", en:"The elephant is very big.", b:"elephant"},
+   {tr:"Fare çok küçük.", en:"The mouse is very small.", b:"small"},
+   {tr:"Bisiklete binebilirim.", en:"I can ride a bike.", b:"ride"},
+   {tr:"Yağmur yağıyor, dışarı çıkamayız.", en:"It's raining, we can't go outside.", b:"outside"},
+   {tr:"Saklambaç oynayalım mı?", en:"Shall we play hide and seek?", b:"hide and seek"},
+   {tr:"Kar yağıyor!", en:"It's snowing!", b:"snowing"},
+   {tr:"Bugün doğum günüm.", en:"Today is my birthday.", b:"birthday"},
+   {tr:"Pastayı çok sevdim.", en:"I love the cake.", b:"cake"},
+   {tr:"Ayakkabımı bağlar mısın?", en:"Can you tie my shoes?", b:"tie"},
+   {tr:"Karnım ağrıyor.", en:"My tummy hurts.", b:"tummy"},
+   {tr:"Bana bir hikâye okur musun?", en:"Can you read me a story?", b:"story"},
+   {tr:"Bu oyunu kazandım!", en:"I won this game!", b:"won"},
+   {tr:"Sıra bende.", en:"It's my turn.", b:"turn"},
+   {tr:"Paylaşmak güzeldir.", en:"Sharing is caring.", b:"caring"},
+   {tr:"Uyumak istemiyorum.", en:"I don't want to sleep.", b:"sleep"},
+   {tr:"Bir dondurma alabilir miyim?", en:"Can I have an ice cream?", b:"have"}
+  ]},
+  {id:"c", name:"İleri", items:[
+   {tr:"Büyüyünce astronot olmak istiyorum.", en:"When I grow up, I want to be an astronaut.", b:"astronaut"},
+   {tr:"Dinozorlar çok uzun zaman önce yaşadı.", en:"Dinosaurs lived a very long time ago.", b:"Dinosaurs"},
+   {tr:"Bitkilerin büyümek için suya ihtiyacı var.", en:"Plants need water to grow.", b:"grow"},
+   {tr:"Ay geceleri parlar.", en:"The moon shines at night.", b:"moon"},
+   {tr:"Arılar çiçeklerden bal yapar.", en:"Bees make honey from flowers.", b:"honey"},
+   {tr:"Kitabımı bulmama yardım eder misin?", en:"Can you help me find my book?", b:"find"},
+   {tr:"Bugün okulda yeni bir şey öğrendim.", en:"I learned something new at school today.", b:"learned"},
+   {tr:"Ödevimi bitirdikten sonra oynayabilir miyim?", en:"Can I play after I finish my homework?", b:"after"},
+   {tr:"En iyi arkadaşım yanımda oturuyor.", en:"My best friend sits next to me.", b:"next to"},
+   {tr:"Odamı kardeşimle paylaşıyorum.", en:"I share my room with my brother.", b:"share"},
+   {tr:"Kaplumbağalar çok yavaş yürür.", en:"Turtles walk very slowly.", b:"slowly"},
+   {tr:"Yazın denize gitmeyi severim.", en:"I like going to the sea in summer.", b:"summer"},
+   {tr:"Kışın kardan adam yaparız.", en:"We build a snowman in winter.", b:"snowman"},
+   {tr:"Bugün kendimi çok cesur hissediyorum.", en:"I feel very brave today.", b:"brave"},
+   {tr:"Lütfen sessiz konuş, bebek uyuyor.", en:"Please speak quietly, the baby is sleeping.", b:"quietly"},
+   {tr:"Gökkuşağının yedi rengi vardır.", en:"A rainbow has seven colors.", b:"rainbow"},
+   {tr:"Doğruyu söylemek önemlidir.", en:"It is important to tell the truth.", b:"truth"},
+   {tr:"Hayvanlara iyi davranmalıyız.", en:"We should be kind to animals.", b:"animals"},
+   {tr:"Yeni kelimeler öğrenmek eğlenceli.", en:"Learning new words is fun.", b:"fun"},
+   {tr:"Seninle oynamak çok güzeldi.", en:"It was really fun playing with you.", b:"playing"}
+  ]}
  ]}
 ];
 // Her cümlenin anahtarı İngilizce metnidir; ilerleme ve tekrar bu anahtarla tutulur.
@@ -490,6 +585,8 @@ const day = (off=0) => {const d=new Date();d.setDate(d.getDate()+off);return d.g
 function loadProg(name){
   const p = store.get("as_p_"+name,{}) || {};
   p.done=p.done||{}; p.streak=p.streak||0; p.last=p.last||""; p.total=p.total||0; p.rev=p.rev||{}; p.days=p.days||{};
+  p.pts=p.pts||0; p.words=p.words||0; p.badges=p.badges||{}; p.best=Math.max(p.best||0,p.streak); p.goal=p.goal||10;
+  p.goalDays=p.goalDays||0; p.revOk=p.revOk||0; if(p.rep===undefined) p.rep=true;
   if(p.v!==2){ // v1.1 anahtarlarını (gunluk0, tatil3…) cümle anahtarına çevir
     const d={};
     for(const k in p.done){
@@ -508,6 +605,28 @@ const weekOf = p => {let s=0;for(let i=0;i<7;i++)s+=p.days[day(-i)]||0;return s}
 const dueKeys = p => Object.keys(p.rev).filter(k=>ITEMS[k]&&p.rev[k].due<=day()).sort((a,b)=>p.rev[a].due<p.rev[b].due?-1:1);
 const INTERVAL = [1,3,7]; // tekrar kutuları: 1, 3, 7 gün sonra
 
+const doneIn = (p,items) => items.every(i=>p.done[i.key]);
+const BADGES = [
+  {id:"ilk",  ic:"🌱", name:"İlk adım",        desc:"İlk cümleni doğru söyle",            ok:p=>p.total>=1},
+  {id:"c10",  ic:"🔟", name:"Isınma",          desc:"10 cümle tamamla",                   ok:p=>p.total>=10},
+  {id:"c50",  ic:"💪", name:"Elli",            desc:"50 cümle tamamla",                   ok:p=>p.total>=50},
+  {id:"c100", ic:"💯", name:"Yüzlük",          desc:"100 cümle tamamla",                  ok:p=>p.total>=100},
+  {id:"lvl",  ic:"🎓", name:"Seviye bitti",    desc:"Bir seviyenin tüm cümlelerini bitir", ok:p=>UNITS.some(u=>u.levels.some(l=>doneIn(p,l.items)))},
+  {id:"unit", ic:"🏆", name:"İlk ünite bitti", desc:"Bir ünitenin 3 seviyesini de bitir",  ok:p=>UNITS.some(u=>u.levels.every(l=>doneIn(p,l.items)))},
+  {id:"s3",   ic:"🔥", name:"3 günlük seri",   desc:"3 gün üst üste pratik yap",          ok:p=>p.best>=3},
+  {id:"s7",   ic:"⚡", name:"7 günlük seri",   desc:"7 gün üst üste pratik yap",          ok:p=>p.best>=7},
+  {id:"s30",  ic:"🌟", name:"30 günlük seri",  desc:"30 gün üst üste pratik yap",         ok:p=>p.best>=30},
+  {id:"goal", ic:"🎯", name:"Hedef tamam",     desc:"Günlük hedefini ilk kez tamamla",    ok:p=>p.goalDays>=1},
+  {id:"goal7",ic:"📅", name:"Hedef haftası",   desc:"Günlük hedefini 7 gün tamamla",      ok:p=>p.goalDays>=7},
+  {id:"rev10",ic:"🔁", name:"Tekrarcı",        desc:"Tekrarda 10 cümleyi ilk denemede bil",ok:p=>p.revOk>=10},
+  {id:"w500", ic:"🗣️", name:"Geveze",          desc:"500 kelime söyle",                   ok:p=>p.words>=500},
+  {id:"w2000",ic:"📣", name:"Laf ustası",      desc:"2000 kelime söyle",                  ok:p=>p.words>=2000}
+];
+const award = p => BADGES.filter(b=>!p.badges[b.id]&&b.ok(p)).map(b=>(p.badges[b.id]=day(),b));
+const toastQ=[];let toastOn=false;
+function toast(msg){toastQ.push(msg);if(toastOn)return;const run=()=>{const m=toastQ.shift();if(!m){toastOn=false;return}toastOn=true;const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");setTimeout(()=>{t.classList.remove("on");setTimeout(run,300)},2600)};run()}
+const ring = (v,max,size=64) => {const r=(size-8)/2,c=2*Math.PI*r,f=Math.min(v/max,1);return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${f>=1?"#2e8b57":"#f5c542"}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/></svg>`};
+
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const NUM = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".split(" ");
@@ -524,8 +643,9 @@ const icon = (u,size=30) => `<svg width="${size}" height="${size}" viewBox="0 0 
 function renderHeader(){
   $("#who").innerHTML = users.map(u=>`<option ${u===cur?"selected":""}>${esc(u)}</option>`).join("");
   const p = prog();
-  $("#stat").textContent = `🔥 ${streakOf(p)} gün · ✅ ${p.total}`;
+  $("#stat").textContent = `🔥 ${streakOf(p)} · ⭐ ${p.pts}`;
 }
+$("#stat").onclick = () => profile();
 $("#who").onchange = e => {cur=e.target.value;store.set("as_cur",cur);renderHeader();home()};
 $("#addWho").onclick = () => {
   const app=$("#app");
@@ -540,23 +660,52 @@ $("#addWho").onclick = () => {
 function home(){
   const p = prog(), due = dueKeys(p);
   const medal = ["🥇","🥈","🥉"];
-  const board = users.map(n=>{const q=loadProg(n);return {n,week:weekOf(q),total:q.total,streak:streakOf(q)}})
-    .sort((a,b)=>b.week-a.week||b.total-a.total);
+  const board = users.map(n=>{const q=loadProg(n);return {n,week:weekOf(q),total:q.total,streak:streakOf(q),pts:q.pts,nb:Object.keys(q.badges).length}})
+    .sort((a,b)=>b.week-a.week||b.pts-a.pts);
+  const td=p.days[day()]||0;
   $("#app").innerHTML = `<p class="hello">Merhaba ${esc(cur)}!</p><p class="note" style="margin-top:0">Bir ünite seç. Türkçe cümleyi gör, İngilizcesini sesli söyle.</p>
+  <button class="goal" id="goal">${ring(td,p.goal)}<span class="u-tx"><b>${td>=p.goal?"Bugünkü hedef tamam! 🎉":`Bugün ${td}/${p.goal} cümle`}</b><small>${td>=p.goal?"Devam edersen puan toplamaya devam edersin.":`Hedefe ${p.goal-td} cümle kaldı.`} Profil ve rozetler için dokun.</small></span><span class="u-go" aria-hidden="true">›</span></button>
   <div class="units">
   ${due.length?`<button class="unit rev" id="rev"><span class="u-ic" style="background:#f5c542"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1f3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><span class="u-tx"><b>Tekrar zamanı</b><small>${due.length} cümle seni bekliyor. Daha önce zorlandıkların.</small></span><span class="u-go" aria-hidden="true">›</span></button>`:""}
   ${UNITS.map(u=>{const all=u.levels.flatMap(l=>l.items), d=all.filter(it=>p.done[it.key]).length;
     return `<button class="unit" data-u="${u.id}"><span class="u-ic" style="background:${u.ic}">${icon(u)}</span><span class="u-tx"><b>${esc(u.name)}</b><small>${d}/${all.length} tamamlandı · 3 seviye</small><span class="u-bar"><i style="width:${d/all.length*100}%"></i></span></span><span class="u-go" aria-hidden="true">›</span></button>`}).join("")}</div>
   <section class="lb" aria-labelledby="lbT">
     <h2 id="lbT">Aile sıralaması <small>son 7 gün</small></h2>
-    <ol>${board.map((r,i)=>`<li class="${r.n===cur?"me":""}"><span class="lb-r">${medal[i]||i+1}</span><span class="lb-n">${esc(r.n)}</span><span class="lb-s">${r.week} doğru<small>🔥 ${r.streak} · ✅ ${r.total}</small></span></li>`).join("")}</ol>
+    <ol>${board.map((r,i)=>`<li class="${r.n===cur?"me":""}"><span class="lb-r">${medal[i]||i+1}</span><span class="lb-n">${esc(r.n)}</span><span class="lb-s">${r.week} doğru<small>🔥 ${r.streak} · ⭐ ${r.pts} · 🏅 ${r.nb}</small></span></li>`).join("")}</ol>
     ${users.length<2?`<p class="note">Aileden birini eklersen burada yarışırsınız. Sıralama bu cihazdaki profilleri gösterir.</p>`:`<p class="note">Bu cihazdaki profiller. Sıralama son 7 gündeki doğru cevaplara göre.</p>`}
   </section>
   ${!window.isSecureContext?`<p class="note">⛔ Sayfa https ile açılmamış; mikrofon çalışmaz. GitHub Pages adresinden aç.</p>`:""}
   ${window.top!==window.self?`<p class="note">⛔ Sayfa başka bir uygulamanın içinde açılmış; mikrofon engellenebilir. Adresi Chrome/Safari'de aç.</p>`:""}
   ${SR?"":`<p class="note">⚠️ Bu tarayıcı ses tanımayı desteklemiyor; yazarak cevaplayabilirsin. Android'de Chrome, iPhone'da Safari kullan.</p>`}`;
   document.querySelectorAll(".unit[data-u]").forEach(b=>b.onclick=()=>unitView(b.dataset.u));
+  $("#goal").onclick=profile;
   if(due.length) $("#rev").onclick=()=>lesson(due.slice(0,20).map(k=>ITEMS[k]),"Tekrar",home,true);
+}
+
+// ---- PROFİL: puan, kelime sayacı, hedef, rozetler ----
+function profile(){
+  const p=prog(), td=p.days[day()]||0;
+  $("#app").innerHTML = `<button class="btn" id="back">← Üniteler</button>
+  <p class="hello">${esc(cur)}</p>
+  <div class="stats">
+    <div><b>⭐ ${p.pts}</b><small>puan</small></div>
+    <div><b>🗣️ ${p.words}</b><small>söylediğin kelime</small></div>
+    <div><b>✅ ${p.total}</b><small>öğrenilen cümle</small></div>
+    <div><b>🔥 ${streakOf(p)}</b><small>gün seri · en iyi ${p.best}</small></div>
+  </div>
+  <section class="lb"><h2>Günlük hedef</h2>
+    <div class="goal-row">${ring(td,p.goal,72)}<p style="margin:0">Bugün <b>${td}/${p.goal}</b> cümle. Hedefini ${p.goalDays} gün tamamladın.</p></div>
+    <div class="row" style="justify-content:flex-start;margin:12px 0 14px" role="group" aria-label="Günlük hedef">${[5,10,20,30].map(g=>`<button class="btn ${g===p.goal?"pri":""}" data-g="${g}" aria-pressed="${g===p.goal}">${g} cümle</button>`).join("")}</div>
+  </section>
+  <section class="lb"><h2>Ayarlar</h2>
+    <label class="tog"><input type="checkbox" id="repT" ${p.rep?"checked":""}> <span><b>Önce dinle ve tekrar et</b><br><small>Yeni bir cümleyi önce tamamını dinleyip tekrar edersin, sonra boşluklu haliyle söylersin.</small></span></label>
+  </section>
+  <section class="lb"><h2>Rozetler <small>${Object.keys(p.badges).length}/${BADGES.length}</small></h2>
+    <div class="badges">${BADGES.map(b=>`<div class="badge ${p.badges[b.id]?"":"off"}"><span>${b.ic}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>`).join("")}</div>
+  </section>`;
+  $("#back").onclick=home;
+  document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{const q=prog();q.goal=+b.dataset.g;saveProg(q);profile()});
+  $("#repT").onchange=e=>{const q=prog();q.rep=e.target.checked;saveProg(q)};
 }
 
 // ---- ÜNİTE: SEVİYE SEÇİMİ ----
@@ -589,73 +738,100 @@ function check(said, target){
   const score = hit.size / n;
   // ekranda orijinal kelimeleri göster ("didn't" gibi kelimeler iki parçaya açıldığı için parça sayısını takip et)
   let k=0;
-  const html = target.split(" ").map(w=>{const c=norm(w).split(" ").filter(Boolean).length;let ok=true;for(let x=0;x<c;x++)if(!hit.has(k+x))ok=false;k+=c;return ok?esc(w):`<span class="w-miss">${esc(w)}</span>`}).join(" ");
+  const html = target.split(" ").map(w=>{const c=norm(w).split(" ").filter(Boolean).length;let ok=true;for(let x=0;x<c;x++)if(!hit.has(k+x))ok=false;k+=c;return ok?esc(w):`<button type="button" class="w-miss" data-say="${esc(w.replace(/[^A-Za-z']/g,""))}" aria-label="${esc(w)} kelimesini dinle">${esc(w)}</button>`}).join(" ");
   return {score, html};
 }
 
 // ---- DERS (normal ve tekrar) ----
 function lesson(list, title, back, isReview=false, startAt=0){
-  let idx = startAt, rec = null, tries = 0, solved = false, nOk = 0, nRev = 0;
+  let idx = startAt, rec = null, tries = 0, solved = false, nOk = 0, nRev = 0, stage = "main";
   const markWrong = key => {const p=prog();if(!p.rev[key]||p.rev[key].box>0||isReview){if(!p.rev[key])nRev++;p.rev[key]={box:0,due:day(1)};saveProg(p)}};
-  const show = () => {
+  const bindSay = () => document.querySelectorAll("#ans [data-say]").forEach(b=>b.onclick=()=>say(b.dataset.say));
+  const clarity = c => {if(!(c>0))return "";const lv=c>=.85?["Çok net","ok"]:c>=.6?["Anlaşılır","mid"]:["Biraz daha net söyle","low"];
+    return `<div class="clar clar-${lv[1]}"><span>Anlaşılırlık: <b>${lv[0]}</b></span><span class="clar-bar"><i style="width:${Math.round(c*100)}%"></i></span></div>`};
+  const show = (stg) => {
     const it = list[idx]; tries=0; solved=false;
-    const blanked = esc(it.en).replace(esc(it.b), `<span class="blank">&nbsp;</span>`);
+    stage = stg || ((!isReview && prog().rep && !prog().done[it.key]) ? "rep" : "main");
+    const rep = stage==="rep";
+    const shown = rep ? esc(it.en) : esc(it.en).replace(esc(it.b), `<span class="blank">&nbsp;</span>`);
     $("#app").innerHTML = `<div class="card">
-      <div class="top"><span>${isReview?"🔁 ":""}${esc(title)}</span><span>${idx+1}/${list.length}</span></div>
+      <div class="top"><span>${rep?"👂 Dinle ve tekrarla":(isReview?"🔁 ":"")+esc(title)}</span><span>${idx+1}/${list.length}</span></div>
       <div class="bar"><i style="width:${idx/list.length*100}%"></i></div>
       <div class="body">
         ${isReview?`<p class="note" style="margin:0 0 8px">${esc(it.u.name)} · ${esc(it.l.name)}</p>`:""}
+        ${rep?`<p class="note" style="margin:0 0 8px">Önce cümlenin tamamını dinle ve aynen tekrar et.</p>`:""}
         <p class="tr">${esc(it.tr)}</p>
-        <p class="en">${blanked}</p>
+        <p class="en${rep?" full":""}">${shown}</p>
         ${SR?`<button class="mic" id="mic" aria-label="Konuş">KONUŞ</button>`:""}
         <input type="text" id="typed" placeholder="${SR?"…ya da buraya yaz":"İngilizcesini yaz"}" autocomplete="off" autocapitalize="off">
         <p class="heard" id="heard"></p>
         <p class="res" id="res" aria-live="polite"></p>
+        <div id="clar"></div>
         <div class="ans" id="ans"></div>
         <div class="row">
           <button class="btn" id="back">← Geri</button>
-          <button class="btn" id="hint">İpucu</button>
+          ${rep?"":`<button class="btn" id="hint">İpucu</button>`}
           <button class="btn" id="listen">🔊 Dinle</button>
-          <button class="btn pri" id="next">Geç →</button>
+          <button class="btn pri" id="next">${rep?"Atla →":"Geç →"}</button>
         </div>
       </div></div>`;
     $("#back").onclick = () => {stop();back()};
-    $("#hint").onclick = () => {$("#ans").innerHTML = `İpucu: <b>${esc(it.b)}</b>`};
+    if(!rep) $("#hint").onclick = () => {$("#ans").innerHTML = `İpucu: <b>${esc(it.b)}</b>`};
     $("#listen").onclick = () => say(it.en);
-    $("#next").onclick = () => {stop();if(!solved)markWrong(it.key);next()};
+    $("#next").onclick = () => {stop();if(rep)return show("main");if(!solved)markWrong(it.key);next()};
     $("#typed").onkeydown = e => {if(e.key==="Enter"&&e.target.value.trim())grade(e.target.value)};
     if(SR) $("#mic").onclick = () => rec ? stop() : start();
+    if(rep) setTimeout(()=>say(it.en),250);
   };
-  const grade = said => {
+  const grade = (said, conf=0) => {
     if(solved) return;
     const it = list[idx];
     $("#heard").textContent = "Duyulan: “" + said + "”";
+    $("#clar").innerHTML = clarity(conf);
     const r = check(said, it.en);
     tries++;
+    if(stage==="rep"){
+      if(r.score >= .85){
+        solved = true;
+        $("#res").className="res ok";$("#res").textContent="Güzel! Şimdi boşluklu haliyle söyle.";
+        $("#ans").innerHTML = r.score<1 ? r.html : ""; bindSay();
+        setTimeout(()=>{if(stage==="rep"&&list[idx]===it)show("main")},1400);
+      } else {
+        $("#res").className="res bad";$("#res").textContent="Tekrar dene. Kırmızı kelimelere dokunup dinle:";
+        $("#ans").innerHTML = r.html; bindSay();
+      }
+      return;
+    }
     if(r.score >= .85){
       solved = true; nOk++;
-      $("#res").className="res ok";$("#res").textContent = r.score===1?"Harika! 🎉":"Çok iyi! 👍";
-      $("#ans").innerHTML = esc(it.en);
+      const gained = 10 + (tries===1?5:0);
+      $("#res").className="res ok";$("#res").textContent = (r.score===1?"Harika! 🎉":"Çok iyi! 👍") + `  +${gained} ⭐`;
+      $("#ans").innerHTML = r.score<1 ? r.html + `<p class="note">Kırmızı kelimeye dokunup dinleyebilirsin.</p>` : esc(it.en); bindSay();
       $("#next").textContent="Devam →";
-      const p=prog(), t=day();
+      const p=prog(), t=day(), before=p.days[t]||0;
       if(!p.done[it.key]){p.done[it.key]=1;p.total++}
-      p.days[t]=(p.days[t]||0)+1;
+      p.pts += gained; p.words += norm(it.en).split(" ").length;
+      p.days[t]=before+1;
+      if(before<p.goal && before+1>=p.goal){p.goalDays++;toast("🎯 Günlük hedef tamam!")}
       if(p.last!==t){p.streak = p.last===day(-1) ? p.streak+1 : 1; p.last=t}
+      p.best=Math.max(p.best,p.streak);
       if(isReview && tries===1 && p.rev[it.key]){
+        p.revOk++;
         const box=p.rev[it.key].box+1;
         if(box>=INTERVAL.length) delete p.rev[it.key]; else p.rev[it.key]={box,due:day(INTERVAL[box])};
       }
+      award(p).forEach(b=>toast(`🏅 Yeni rozet: ${b.ic} ${b.name}`));
       saveProg(p);renderHeader();say(it.en);
     } else {
       if(tries===1) markWrong(it.key);
       $("#res").className="res bad";$("#res").textContent = tries>=2?"Doğrusu şu, bir daha dene:":"Tekrar dene";
-      $("#ans").innerHTML = tries>=2 ? r.html : "";
+      $("#ans").innerHTML = tries>=2 ? r.html + `<p class="note">Kırmızı kelimeye dokunup dinle.</p>` : ""; bindSay();
     }
   };
   const start = () => {
     rec = new SR(); rec.lang="en-US"; rec.interimResults=true; rec.maxAlternatives=3;
     $("#mic").classList.add("on"); $("#mic").textContent="DİNLİYOR"; $("#res").textContent="";
-    let finalText="", lastText="", gotAudio=false;
+    let finalText="", lastText="", gotAudio=false, conf=0;
     const status = t => {const h=$("#heard");if(h)h.textContent=t};
     rec.onstart = () => status("🎙️ Başladı, konuş…");
     rec.onaudiostart = () => {gotAudio=true;status("🎙️ Ses alınıyor…")};
@@ -669,7 +845,7 @@ function lesson(list, title, back, isReview=false, startAt=0){
       if(r.isFinal){
         // alternatifler arasından en iyisini seç
         const it=list[idx];let best=r[0].transcript,bs=-1;
-        for(let k=0;k<r.length;k++){const s=check(r[k].transcript,it.en).score;if(s>bs){bs=s;best=r[k].transcript}}
+        for(let k=0;k<r.length;k++){const s=check(r[k].transcript,it.en).score;if(s>bs){bs=s;best=r[k].transcript;conf=r[k].confidence||0}}
         finalText=best;
       }
     };
@@ -685,7 +861,7 @@ function lesson(list, title, back, isReview=false, startAt=0){
       clearTimeout(timer);
       const m=$("#mic");if(m){m.classList.remove("on");m.textContent="KONUŞ"}rec=null;
       const t = finalText || lastText;   // iPhone'da sonuç bazen "final" işaretlenmiyor
-      if(t) grade(t);
+      if(t) grade(t, finalText?conf:0);
       else if(!err) status(gotAudio?"Ses geldi ama kelime anlaşılamadı, tekrar dene.":"⛔ Mikrofondan ses gelmedi. Sayfayı Chrome/Safari'de, https adresinden açtığından emin ol.");
     };
     try{rec.start()}catch(x){clearTimeout(timer);status("⛔ Başlatılamadı: "+x.message);stop()}
@@ -713,7 +889,11 @@ function welcome(){
     $("#wOk").onclick=ok; inp.onkeydown=e=>{if(e.key==="Enter")ok();if(e.key==="Escape")welcome()};
   };
   const p=prog();
-  $("#wStat").textContent = p.total ? `🔥 ${p.streak} gün seri · ✅ ${p.total} cümle` : `Merhaba ${cur}, ilk cümlen seni bekliyor.`;
+  const td=p.days[day()]||0, left=p.goal-td;
+  $("#wStat").textContent = !p.total ? `Merhaba ${cur}, ilk cümlen seni bekliyor.`
+    : left<=0 ? `🎯 Bugünkü hedef tamam · 🔥 ${streakOf(p)} gün · ⭐ ${p.pts}`
+    : td===0 ? `🔔 Bugün henüz pratik yapmadın. Hedef: ${p.goal} cümle${streakOf(p)?` · 🔥 ${streakOf(p)} günlük serini koru!`:""}`
+    : `Bugün ${td}/${p.goal} cümle · hedefe ${left} kaldı · ⭐ ${p.pts}`;
 }
 $("#wGo").onclick=()=>{document.body.classList.remove("intro");renderHeader();home();window.scrollTo(0,0)};
 $("#toWelcome").onclick=()=>{try{speechSynthesis.cancel()}catch{}welcome()};
