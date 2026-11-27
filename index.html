@@ -30,6 +30,9 @@ main{max-width:640px;margin:0 auto;padding:16px}
 .tr{font-size:22px;margin:0 0 12px}
 .en{font-size:26px;font-weight:700;color:#5d7a3a;margin:0 0 16px;letter-spacing:.3px}
 .blank{display:inline-block;min-width:3.5em;border-bottom:3px solid currentColor}
+.en .blank{min-width:0;height:1em;vertical-align:-2px;margin:0 1px}
+.en mark{background:#fde9a9;color:inherit;border-radius:4px;padding:0 3px}
+@media(prefers-color-scheme:dark){.en mark{background:#5a4a14}}
 .mic{width:84px;height:84px;border-radius:50%;border:4px solid var(--pri);background:var(--card);color:var(--pri);font-size:15px;font-weight:700;cursor:pointer}
 .mic.on{background:var(--bad);border-color:var(--bad);color:#fff;animation:p 1s infinite}
 @keyframes p{50%{transform:scale(1.07)}}
@@ -901,7 +904,37 @@ const UNITS = [
 // Her cümlenin anahtarı İngilizce metnidir; ilerleme ve tekrar bu anahtarla tutulur.
 const ITEMS = {};
 UNITS.forEach(u=>u.levels.forEach(l=>l.items.forEach(it=>{it.key=it.en;it.u=u;it.l=l;ITEMS[it.key]=it})));
-const LEVEL_NOTE = {a:"Kısa, temel cümleler", b:"Günlük konuşma", c:"Uzun ve deyimli cümleler"};
+const LEVEL_NOTE = {a:"Kısa cümleler · kelimeler açık", b:"Günlük konuşma · birkaç kelime gizli", c:"Uzun cümleler · kelimeler gizli"};
+// Seviyeye göre İngilizce cümlenin ne kadarı görünür: a = hepsi, b = boşluk kelimesi + birkaç kelime daha gizli, c = hiçbiri.
+const STOP = new Set("the a an and or but to of in on at for is am are was were be it this that i you he she we they my your his her our their me him us them can do does did not have has had will would could should let's i'm it's don't".split(" "));
+function maskWords(it){
+  const toks = it.en.split(" ").map(t=>{const m=t.match(/^([^A-Za-z0-9']*)(.*?)([^A-Za-z0-9']*)$/);return {pre:m[1],w:m[2],post:m[3]}});
+  const n = toks.length, lv = it.l.id;
+  const bStart = it.en.slice(0,Math.max(it.en.indexOf(it.b),0)).split(" ").length-1, bLen = it.b.split(" ").length;
+  const hide = new Set();
+  if(lv==="c") toks.forEach((_,i)=>hide.add(i));
+  else if(lv==="b"){
+    for(let i=bStart;i<bStart+bLen;i++) hide.add(i);
+    let h=0; for(const ch of it.en) h=(h*31+ch.charCodeAt(0))>>>0;
+    const cand = toks.map((t,i)=>i).filter(i=>!hide.has(i)&&toks[i].w.length>=3&&!STOP.has(toks[i].w.toLowerCase()))
+      .sort((x,y)=>((x*2654435761+h)>>>0)%997-((y*2654435761+h)>>>0)%997);
+    const extra = Math.max(0, Math.min(Math.max(1,Math.round(n*.3)-bLen), Math.floor(n/2)-bLen));
+    cand.slice(0,extra).forEach(i=>hide.add(i));
+  }
+  const keyIdx = i => i>=bStart && i<bStart+bLen;
+  return {toks, hide, keyIdx, lv};
+}
+function maskedHTML(it, hintLevel=0){
+  const {toks, hide, keyIdx, lv} = maskWords(it);
+  return toks.map((t,i)=>{
+    let core;
+    if(!hide.has(i)) core = (lv==="a"&&keyIdx(i)) ? `<mark>${esc(t.w)}</mark>` : esc(t.w);
+    else if(hintLevel>=2) core = `<mark>${esc(t.w)}</mark>`;
+    else if(hintLevel===1) core = esc(t.w[0]) + `<span class="blank" style="width:${(t.w.length-1)*.55}em"></span>`;
+    else core = `<span class="blank" style="width:${Math.max(t.w.length*.6,1.2)}em"></span>`;
+    return esc(t.pre)+core+esc(t.post);
+  }).join(" ");
+}
 
 // ---- DEPOLAMA ----
 const store = {
@@ -1230,7 +1263,8 @@ function lesson(list, title, back, isReview=false, startAt=0){
     const it = list[idx]; tries=0; solved=false;
     stage = stg || ((!isReview && prog().rep && !prog().done[it.key]) ? "rep" : "main");
     const rep = stage==="rep";
-    const shown = rep ? esc(it.en) : esc(it.en).replace(esc(it.b), `<span class="blank">&nbsp;</span>`);
+    const shown = rep ? esc(it.en) : maskedHTML(it);
+    const hasHint = !rep && it.l.id!=="a"; let hintLv = 0;
     $("#app").innerHTML = `<div class="card">
       <div class="top"><span>${rep?"👂 Dinle ve tekrarla":(isReview?"🔁 ":"")+esc(title)}</span><span>${idx+1}/${list.length}</span></div>
       <div class="bar"><i style="width:${idx/list.length*100}%"></i></div>
@@ -1238,7 +1272,7 @@ function lesson(list, title, back, isReview=false, startAt=0){
         ${isReview?`<p class="note" style="margin:0 0 8px">${esc(it.u.name)} · ${esc(it.l.name)}</p>`:""}
         ${rep?`<p class="note" style="margin:0 0 8px">Önce cümlenin tamamını dinle ve aynen tekrar et.</p>`:""}
         <p class="tr">${esc(it.tr)}</p>
-        <p class="en${rep?" full":""}">${shown}</p>
+        <p class="en${rep?" full":""}" id="en">${shown}</p>
         ${SR?`<button class="mic" id="mic" aria-label="Konuş">KONUŞ</button>`:""}
         <input type="text" id="typed" placeholder="${SR?"…ya da buraya yaz":"İngilizcesini yaz"}" autocomplete="off" autocapitalize="off">
         <p class="heard" id="heard"></p>
@@ -1247,13 +1281,13 @@ function lesson(list, title, back, isReview=false, startAt=0){
         <div class="ans" id="ans"></div>
         <div class="row">
           <button class="btn" id="back">← Geri</button>
-          ${rep?"":`<button class="btn" id="hint">İpucu</button>`}
+          ${hasHint?`<button class="btn" id="hint">İpucu</button>`:""}
           <button class="btn" id="listen">🔊 Dinle</button>
           <button class="btn pri" id="next">${rep?"Atla →":"Geç →"}</button>
         </div>
       </div></div>`;
     $("#back").onclick = () => {stop();back()};
-    if(!rep) $("#hint").onclick = () => {$("#ans").innerHTML = `İpucu: <b>${esc(it.b)}</b>`};
+    if(hasHint) $("#hint").onclick = () => {hintLv=Math.min(hintLv+1,2);$("#en").innerHTML=maskedHTML(it,hintLv);if(hintLv===2)$("#hint").disabled=true;else $("#hint").textContent="Kelimeleri göster"};
     $("#listen").onclick = () => say(it.en);
     $("#next").onclick = () => {stop();if(rep)return show("main");if(!solved)markWrong(it.key);next()};
     $("#typed").onkeydown = e => {if(e.key==="Enter"&&e.target.value.trim())grade(e.target.value)};
@@ -1283,7 +1317,7 @@ function lesson(list, title, back, isReview=false, startAt=0){
       solved = true; nOk++;
       const gained = 10 + (tries===1?5:0);
       $("#res").className="res ok";$("#res").textContent = (r.score===1?"Harika! 🎉":"Çok iyi! 👍") + `  +${gained} ⭐`;
-      $("#ans").innerHTML = r.score<1 ? r.html + `<p class="note">Kırmızı kelimeye dokunup dinleyebilirsin.</p>` : esc(it.en); bindSay();
+      $("#ans").innerHTML = r.score<1 ? r.html + `<p class="note">Kırmızı kelimeye dokunup dinleyebilirsin.</p>` : esc(it.en); bindSay(); if(stage==="main"&&$("#en")) $("#en").innerHTML=maskedHTML(it,2);
       $("#next").textContent="Devam →";
       const p=prog(), t=day(), before=p.days[t]||0;
       if(!p.done[it.key]){p.done[it.key]=1;p.total++}
