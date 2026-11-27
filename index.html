@@ -1141,7 +1141,7 @@ function home(){
   ${SR?"":`<p class="note">⚠️ Bu tarayıcı ses tanımayı desteklemiyor; yazarak cevaplayabilirsin. Android'de Chrome, iPhone'da Safari kullan.</p>`}`;
   document.querySelectorAll(".unit[data-u]").forEach(b=>b.onclick=()=>unitView(b.dataset.u));
   $("#goal").onclick=profile;
-  if(due.length) $("#rev").onclick=()=>lesson(due.slice(0,20).map(k=>ITEMS[k]),"Tekrar",home,true);
+  if(due.length) $("#rev").onclick=()=>lesson(shuffle(due.slice(0,20).map(k=>ITEMS[k])),"Tekrar",home,true);
 }
 
 // ---- PROFİL: puan, kelime sayacı, hedef, rozetler ----
@@ -1227,8 +1227,8 @@ function unitView(uid){
   $("#back").onclick=home;
   document.querySelectorAll(".unit[data-l]").forEach(b=>b.onclick=()=>{
     const l=u.levels.find(x=>x.id===b.dataset.l), q=prog();
-    const first=l.items.findIndex(it=>!q.done[it.key]);
-    lesson(l.items,`${u.name} · ${l.name}`,()=>unitView(uid),false,first<0?0:first);
+    // Cümleler her seferinde karışık gelir; henüz bitirilmemişler önce sorulur.
+    lesson([...shuffle(l.items.filter(it=>!q.done[it.key])),...shuffle(l.items.filter(it=>q.done[it.key]))],`${u.name} · ${l.name}`,()=>unitView(uid));
   });
 }
 
@@ -1252,6 +1252,7 @@ function check(said, target){
 }
 
 // ---- DERS (normal ve tekrar) ----
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function lesson(list, title, back, isReview=false, startAt=0){
   document.body.dataset.view="lesson";
   let idx = startAt, rec = null, tries = 0, solved = false, nOk = 0, nRev = 0, stage = "main";
